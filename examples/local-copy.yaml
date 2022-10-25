@@ -1,0 +1,13 @@
+blueprint:
+  description: An active blueprint description
+  active: 1
+
+deploy:
+  source:
+    type: folder
+    folder: /path/to/folder/
+
+  destinations:
+    - destination:
+       machine: local
+       folder: /path/to/deployed/folder/
