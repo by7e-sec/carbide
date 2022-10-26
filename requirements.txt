@@ -1,5 +1,6 @@
 bcrypt==4.0.1
 cffi==1.15.1
+colour==0.1.5
 cryptography==38.0.1
 mccabe==0.7.0
 paramiko==2.11.0
