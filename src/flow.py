@@ -5,9 +5,9 @@ from libs.config import Config
 from libs.processor import Processor
 
 parser = OptionParser()
-parser.add_option("-c", "--config", dest="config",  default="",
+parser.add_option("-c", "--config", dest="config", default="",
                   help="Path to config file")
-parser.add_option("-b", "--blueprint", dest="blueprint", action="append", 
+parser.add_option("-b", "--blueprint", dest="blueprint", action="append",
                   default=[], help="Run specific blueprint (stackable)")
 parser.add_option("-l", "--list", action="store_true", dest="listblueprints",
                   default=False, help="List available blueprints")
