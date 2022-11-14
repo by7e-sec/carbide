@@ -5,12 +5,16 @@ from .blueprint import Blueprint
 
 
 class Local:
-    bp: Blueprint = None
+    bp: Blueprint
 
     def __init__(self, bp: Blueprint) -> None:
-        print(bp)
+        self.bp = bp  # Load blueprint
 
-    def deploy(src: str, dst: str):
+    def deploy(self):
+        src = self.bp.get_source()
+        dst = ''
+        print(src)
+        return
         try:
             os.chdir(src)
             for (root, _, files) in os.walk(src, topdown=True):

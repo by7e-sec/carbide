@@ -36,7 +36,5 @@ class Processor:
 
     def run(self):
         for bp in self.blueprints.get_blueprints():
-            print(bp.is_valid())
-            print(bp)
             cp_local = Local(bp)
             cp_local.deploy()

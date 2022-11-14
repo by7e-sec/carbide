@@ -57,6 +57,7 @@ class Config:
             if os.path.exists(os.path.expanduser(file)):
                 print(f"Config found in {file}. Loading...")
                 self.__load_config(file)
+
                 return
 
         print("Cannot locate flow.yaml in default locations! Giving up.")

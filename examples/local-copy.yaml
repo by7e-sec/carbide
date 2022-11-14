@@ -2,12 +2,12 @@ blueprint:
   description: An active blueprint description
   active: true
 
-deploy:
-  source:
-    type: folder
-    folder: /path/to/folder/
+  deploy:
+    source:
+      type: folder
+      folder: /path/to/folder/
 
-  destinations:
-    - destination:
-       machine: local
-       folder: /path/to/deployed/folder/
+    destinations:
+      - destination:
+        machine: local
+        folder: /path/to/deployed/folder/
