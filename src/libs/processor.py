@@ -1,12 +1,12 @@
 from .blueprints import Blueprints
 from .config import Config
-# from .deputils import Local, Remote
+from .fsutils import Local
 from colorama import Fore, Style
 import sys
 
 
 class Processor:
-    blueprints: None
+    blueprints: Blueprints
     opts: dict
 
     def __init__(self, conf: Config, opts: dict) -> None:
@@ -35,4 +35,8 @@ class Processor:
         sys.exit(0)
 
     def run(self):
-        pass
+        for bp in self.blueprints.get_blueprints():
+            print(bp.is_valid())
+            print(bp)
+            cp_local = Local(bp)
+            cp_local.deploy()

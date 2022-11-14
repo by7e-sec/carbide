@@ -17,3 +17,5 @@ parser.add_option("-l", "--list", action="store_true", dest="listblueprints",
 if __name__ == "__main__":
     conf = Config(opts.config)
     proc = Processor(conf, opts)
+
+    proc.run()

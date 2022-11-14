@@ -34,3 +34,6 @@ class Blueprints:
                                   'description': bp.get_description()}
 
         return out
+
+    def get_blueprints(self):
+        return self.bps
