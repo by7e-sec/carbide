@@ -5,7 +5,7 @@ from .blueprint import Blueprint
 
 
 class Local:
-    bp: Blueprint
+    bp: Blueprint = None
 
     def __init__(self, bp: Blueprint) -> None:
         self.bp = bp  # Load blueprint

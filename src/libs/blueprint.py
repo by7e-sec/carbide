@@ -40,10 +40,7 @@ class Blueprint:
         return self.bp['blueprint']['active']
 
     def is_valid(self):
-        if 'blueprint' not in self.bp or not self.valid:
-            return False
-
-        return True
+        return self.valid
 
     def get_host(self):
         pass
@@ -61,11 +58,12 @@ class Blueprint:
         return self.bp['blueprint']['description']
 
     def get_source(self):
-        if self.valid and 'source' in self.bp['blueprint']['deploy']:
-            return self.bp['blueprint']['deploy']['source']
-
-        return ''
+        if not self.valid:
+            return ''
+        
+        return self.bp['blueprint']['deploy']['source']
 
     def get_destinatons(self):
-        if 'destinations' not in self.bp['blueprint']:
+        if not self.valid:
             return ''
+
