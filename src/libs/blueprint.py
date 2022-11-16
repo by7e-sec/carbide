@@ -57,13 +57,12 @@ class Blueprint:
 
         return self.bp['blueprint']['description']
 
-    def get_source(self):
+    def get_source(self) -> str:
         if not self.valid:
             return ''
-        
+
         return self.bp['blueprint']['deploy']['source']
 
     def get_destinatons(self):
         if not self.valid:
             return ''
-

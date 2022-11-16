@@ -4,11 +4,11 @@ import yaml
 from loguru import logger
 
 default_paths = [
-    '/etc/distflow/flow.yaml',
-    '~/.local/distflow/flow.yaml',
-    '../cfg/flow.yaml',
-    './cfg/flow.yaml',
-    './flow.yaml',
+    '/etc/carbide/carbide.yaml',
+    '~/.local/carbide/carbide.yaml',
+    '../cfg/carbide.yaml',
+    './cfg/carbide.yaml',
+    './carbide.yaml',
 ]
 
 
@@ -60,7 +60,7 @@ class Config:
 
                 return
 
-        print("Cannot locate flow.yaml in default locations! Giving up.")
+        print("Cannot locate carbide.yaml in default locations! Giving up.")
 
     def get_blueprints_location(self) -> str:
         # Return the path provided in the main config file
