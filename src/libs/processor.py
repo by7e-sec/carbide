@@ -20,15 +20,18 @@ class Processor:
         # Colors
         bright_green = Style.BRIGHT + Fore.GREEN
         dim_red = Style.DIM + Fore.RED
+        rst = Style.RESET_ALL
 
         bps = self.blueprints.list_all()
         print(Style.BRIGHT + Fore.MAGENTA + "Available blueprints:")
         for bp in bps:
             is_valid = bright_green + 'Valid' if bps[bp]['valid'] else dim_red + 'Not valid'
             is_active = bright_green + 'Active' if bps[bp]['active'] else dim_red + 'Inactive'
-            print(Style.BRIGHT + Fore.YELLOW + bp + ': ' + is_valid + Fore.WHITE + ' || ' + is_active)
-            if 'description' in bps[bp]:
-                print(Style.DIM + Fore.WHITE + ' >> ' + bps[bp]['description'])
+            print(Style.BRIGHT + Fore.YELLOW + bp + ': ' + is_valid + Fore.WHITE + ' || ' + is_active + rst)
+            if bps[bp]['description'] != '':
+                print(Style.DIM + Fore.WHITE + ' # ' + Fore.MAGENTA + bps[bp]['description'])
+            else:
+                print(Style.DIM + Fore.WHITE + ' # No description')
 
             print(Style.RESET_ALL)
 

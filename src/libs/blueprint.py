@@ -34,6 +34,9 @@ class Blueprint:
         self.valid = True
 
     def is_active(self):
+        if not self.valid:
+            return False
+
         if 'active' not in self.bp['blueprint']:
             return True
 
@@ -52,10 +55,10 @@ class Blueprint:
         return self.name
 
     def get_description(self) -> str:
-        if 'description' not in self.bp['blueprint']:
+        if not self.valid or 'description' not in self.bp['blueprint']:
             return ''
 
-        return self.bp['blueprint']['description']
+        return self.bp['blueprint']['description'].strip()
 
     def get_source(self) -> str:
         if not self.valid:

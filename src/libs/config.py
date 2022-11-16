@@ -6,8 +6,8 @@ from loguru import logger
 default_paths = [
     '/etc/carbide/carbide.yaml',
     '~/.local/carbide/carbide.yaml',
-    '../cfg/carbide.yaml',
-    './cfg/carbide.yaml',
+    '../config/carbide.yaml',
+    './config/carbide.yaml',
     './carbide.yaml',
 ]
 
@@ -49,7 +49,7 @@ class Config:
             with open(file, 'r') as f:
                 self.conf = yaml.safe_load(f)
         except Exception:
-            print("Cannot read YAML file!")
+            logger.error("Cannot read YAML file!")
 
     def __scan_default_paths(self) -> None:
         # Scan default path for a potential config file.
@@ -60,7 +60,8 @@ class Config:
 
                 return
 
-        print("Cannot locate carbide.yaml in default locations! Giving up.")
+        logger.error("Cannot locate carbide.yaml in default locations! Giving up.")
+        sys.exit(1)
 
     def get_blueprints_location(self) -> str:
         # Return the path provided in the main config file
