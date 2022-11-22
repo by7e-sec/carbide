@@ -4,7 +4,6 @@ blueprint:
 
   deploy:
     source:
-      type: folder
       folder: /path/to/folder/
 
     destinations:

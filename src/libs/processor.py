@@ -41,5 +41,6 @@ class Processor:
 
     def run(self):
         for bp in self.blueprints.get_blueprints():
-            cp_local = Local(bp)
-            cp_local.deploy()
+            if bp.is_active():
+                cp_local = Local(bp)
+                cp_local.deploy()

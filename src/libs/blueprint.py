@@ -13,7 +13,7 @@ class Blueprint:
 
         self.__check_valid()
 
-    def __check_valid(self):
+    def __check_valid(self) -> None:
         if 'blueprint' not in self.bp:
             logger.error('Blueprint is not wrapped in `blueprint` structure!')
             return
@@ -27,8 +27,12 @@ class Blueprint:
             logger.error('`source` configuration is missing from the `deploy` section!')
             return
 
-        if 'destination' not in dep and 'destinations' not in dep:
-            logger.error('`destination(s)` configuration is missing from the `deploy` section!')
+        if 'folder' not in dep['source'] and 'items' not in dep['source']:
+            logger.error('`folder` or `items` not defined in `source`')
+            return
+
+        if 'destinations' not in dep:
+            logger.error('`destination` configuration is missing from the `deploy` section!')
             return
 
         self.valid = True
@@ -44,12 +48,6 @@ class Blueprint:
 
     def is_valid(self):
         return self.valid
-
-    def get_host(self):
-        pass
-
-    def get_auth(self):
-        pass
 
     def get_name(self) -> str:
         return self.name
@@ -69,3 +67,5 @@ class Blueprint:
     def get_destinatons(self):
         if not self.valid:
             return ''
+
+        return self.bp['blueprint']['deploy']['destinations']

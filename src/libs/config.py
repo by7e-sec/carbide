@@ -26,7 +26,7 @@ class Config:
         # Init logging
         self.__init_logging()
 
-    def __init_logging(self):
+    def __init_logging(self) -> None:
         if 'logging' in self.conf:
             if 'file' in self.conf['logging']:
                 if 'file_format' in self.conf['logging']:
@@ -48,8 +48,8 @@ class Config:
         try:
             with open(file, 'r') as f:
                 self.conf = yaml.safe_load(f)
-        except Exception:
-            logger.error("Cannot read YAML file!")
+        except Exception as e:
+            logger.error(f"Cannot read YAML file!\n{e}")
 
     def __scan_default_paths(self) -> None:
         # Scan default path for a potential config file.
