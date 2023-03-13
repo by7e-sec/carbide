@@ -4,6 +4,7 @@ blueprint:
 
   deploy:
     source:
+      machine: local
       folder: /path/to/folder/
 
     destinations:

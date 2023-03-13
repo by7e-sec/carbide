@@ -1,7 +1,7 @@
 blueprints:
   /path/to/your/blueprints
 
-logging: 
+logging:
   file: "loging.log"
   file_format: "{time} {level} {message}"
   stdout_format: "<green>{time}</green> <level>{message}</level>"
@@ -11,5 +11,5 @@ authentication:
   password:
 
 machines:
-  - local:
-      local: true
+  local:
+    local: true

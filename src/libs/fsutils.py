@@ -10,23 +10,27 @@ class Local:
     def __init__(self, bp: Blueprint) -> None:
         self.bp = bp  # Load blueprint
 
-    def deploy(self):
+    def source(self):
         src = self.bp.get_source()
-        if 'folder' in src:
-            stype = 'folder'
-            ssource = src['folder']
-        elif 'items' in src:
-            stype = 'items'
-            ssource = src['items']
+        self.bp.set_temp(src)
 
-        if stype == 'folder':
+    def destination(self):
+        src = self.bp.get_temp()
+        if "folder" in src:
+            stype = "folder"
+            ssource = src["folder"]
+        elif "items" in src:
+            stype = "items"
+            ssource = src["items"]
+
+        if stype == "folder":
             try:
                 source_files = []
                 for (root, _, files) in os.walk(ssource, topdown=True):
-                    pth = root.replace(ssource, '')
+                    pth = root.replace(ssource, "")
                     filtered = False
-                    if 'filter' in src:
-                        for filter in src['filter']:
+                    if "filter" in src:
+                        for filter in src["filter"]:
                             if filter in pth:
                                 filtered = True
 
@@ -36,18 +40,22 @@ class Local:
                             source_files.append(os.path.join(root, file))
             except Exception as e:
                 logger.critical(f"Unable to copy data to destination!\n{e}")
-        elif stype == 'items':
+        elif stype == "items":
             source_files = ssource
 
+        print(source_files)
+
+    def deploy(self):
+        return
         try:
             destinations = self.bp.get_destinatons()
             for dst in destinations:
-                if not os.path.exists(dst['folder']):
-                    os.mkdir(dst['folder'])
+                if not os.path.exists(dst["folder"]):
+                    os.mkdir(dst["folder"])
 
                 for sf in source_files:
                     if not os.path.isdir(sf):
-                        destfile = os.path.join(dst['folder'], sf.replace(ssource, ''))
+                        destfile = os.path.join(dst["folder"], sf.replace(ssource, ""))
                         if not os.path.exists(os.path.dirname(destfile)):
                             logger.debug(f"Creating folder {os.path.dirname(destfile)}")
                             os.makedirs(os.path.dirname(destfile))
@@ -55,11 +63,12 @@ class Local:
                         logger.debug(f"Copy {sf} to {destfile}")
 
         except Exception as e:
-            logger.critical(f"Unable to copy data to destination!\n{e}")
+            logger.error(f"Unable to copy data to destination!\n{e}")
 
 
 class Remote:
-    bp: Blueprint = None
+    def source(self):
+        pass
 
-    def __init__(self, bp: Blueprint) -> None:
-        self.bp = bp  # Load blueprint
+    def destination(self):
+        pass
