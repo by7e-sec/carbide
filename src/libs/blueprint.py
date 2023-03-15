@@ -1,6 +1,8 @@
 import os
-from loguru import logger
 import tempfile
+
+from loguru import logger
+
 from libs.config import Config
 
 
@@ -69,6 +71,9 @@ class Blueprint:
             return ""
 
         return self.bp["blueprint"]["description"].strip()
+
+    def get_kind(self) -> str:
+        return "rsync"
 
     def get_temp(self):
         if self.tmp_folder == "":

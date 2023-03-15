@@ -1,8 +1,9 @@
+import sys
+
+from colorama import Fore, Style
+
 from .blueprints import Blueprints
 from .config import Config
-from .fsutils import Local
-from colorama import Fore, Style
-import sys
 
 
 class Processor:
@@ -32,6 +33,7 @@ class Processor:
             is_active = is_active + Style.RESET_ALL
 
             print(Style.BRIGHT + Fore.YELLOW + bp + ": " + is_valid + Fore.WHITE + " || " + is_active)
+            print(Style.BRIGHT + Fore.BLUE + " Kind: " + "rsync" if bps[bp]["kind"] else "fallback")
             if bps[bp]["description"] != "":
                 print(Style.DIM + Fore.WHITE + " # " + Fore.MAGENTA + bps[bp]["description"])
             else:
