@@ -1,11 +1,13 @@
 import os
 import sys
+
 import yaml
 from loguru import logger
 
 default_paths = [
     "/etc/carbide/carbide.yaml",
-    "~/.local/carbide/carbide.yaml",
+    "~/.local/share/carbide/carbide.yaml",
+    "~/.carbide/carbide.yaml",
     "../config/carbide.yaml",
     "./config/carbide.yaml",
     "./carbide.yaml",
@@ -54,7 +56,8 @@ class Config:
     def __scan_default_paths(self) -> None:
         # Scan default path for a potential config file.
         for file in default_paths:
-            if os.path.exists(os.path.expanduser(file)):
+            file = os.path.expanduser(file)
+            if os.path.exists(file):
                 print(f"Config found in {file}. Loading...")
                 self.__load_config(file)
 
