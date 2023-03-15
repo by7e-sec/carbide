@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+      - id: black
+        name: Black Python code formatting
+        types: [python]
+        args: ["--line-length=120"]
+  - repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+      - id: isort
+        name: Sorting import statements
+        args: ["--profile", "black", "--filter-files"]
+        files: \.py$
+  - repo: https://github.com/PyCQA/autoflake
+    rev: v2.0.1
+    hooks:
+      - id: autoflake
+        name: Remove unused variables and imports
+        args: [
+          "--in-place",
+          "--remove-all-unused-imports",
+          "--remove-unused-variables",
+          "--expand-star-imports",
+          "--ignore-init-module-imports"
+        ]
+        files: \.py$
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
