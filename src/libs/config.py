@@ -80,6 +80,8 @@ class Config:
     def get_auth(self, machine) -> dict:
         if machine in self.conf["authentication"]:
             return self.conf["authentication"][machine]
+        elif machine == "local":
+            return {}
 
         logger.warning(f"Authentication for machine {machine} is not in global config file!")
         return {}
