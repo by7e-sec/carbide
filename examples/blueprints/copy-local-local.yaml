@@ -8,6 +8,5 @@ blueprint:
       folder: /path/to/folder/
 
     destinations:
-      - destination:
-        machine: local
+      - machine: local
         folder: /path/to/deployed/folder/

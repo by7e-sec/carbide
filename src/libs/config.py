@@ -76,3 +76,10 @@ class Config:
         if "machines" in self.conf and type(self.conf["machines"]) == dict:
             return self.conf["machines"][machine] if machine in self.conf["machines"] else {}
         return {}
+
+    def get_auth(self, machine) -> dict:
+        if machine in self.conf["authentication"]:
+            return self.conf["authentication"][machine]
+
+        logger.warning(f"Authentication for machine {machine} is not in global config file!")
+        return {}

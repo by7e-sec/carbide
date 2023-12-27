@@ -13,11 +13,11 @@ class Blueprint:
     tmp_folder: str
     conf: Config
 
-    def __init__(self, filename: str, data: dict) -> None:
+    def __init__(self, filename: str, data: dict, conf: Config) -> None:
         self.name: str = os.path.splitext(filename)[0]
-        self.bp: dict = data
+        self.conf: Config = conf
         self.tmp_folder = ""
-        self.conf: Config
+        self.bp: dict = self.get_auth(data)
 
         self.__check_valid()
 
@@ -84,6 +84,7 @@ class Blueprint:
     def is_source_local(self):
         machine = self.bp["blueprint"]["deploy"]["source"]["machine"]
         data = self.conf.get_machine(machine)
+
         return data["local"]
 
     def get_source(self) -> str:
@@ -97,3 +98,9 @@ class Blueprint:
             return ""
 
         return self.bp["blueprint"]["deploy"]["destinations"]
+
+    def get_auth(self, data) -> dict:
+        for dest in data["blueprint"]["deploy"]["destinations"]:
+            dest.update(self.conf.get_auth(dest["machine"]))
+
+        return data

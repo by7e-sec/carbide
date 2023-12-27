@@ -33,20 +33,17 @@ class Processor:
             is_active = is_active + Style.RESET_ALL
 
             print(Style.BRIGHT + Fore.YELLOW + bp + ": " + is_valid + Fore.WHITE + " || " + is_active)
-            print(Style.BRIGHT + Fore.BLUE + " Kind: " + "rsync" if bps[bp]["kind"] else "fallback")
+            print(Style.BRIGHT + Fore.BLUE + " Kind: " + bps[bp]["kind"] if bps[bp]["kind"] else "fallback")
             if bps[bp]["description"] != "":
                 print(Style.DIM + Fore.WHITE + " # " + Fore.MAGENTA + bps[bp]["description"])
-            else:
-                print(Style.DIM + Fore.WHITE + " # No description")
 
             print(Style.RESET_ALL)
 
         sys.exit(0)
 
     def run(self):
-        for bp in self.blueprints.get_blueprints():
+        for bp in self.blueprints.get_blueprints(self.opts.blueprint):
             if bp.is_active():
-                bp.set_config(self.conf)
                 if bp.is_source_local():
                     print(bp.get_source()["folder"])
                     bp.set_temp(bp.get_source())
