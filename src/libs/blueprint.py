@@ -17,9 +17,13 @@ class Blueprint:
         self.name: str = os.path.splitext(filename)[0]
         self.conf: Config = conf
         self.tmp_folder = ""
-        self.bp: dict = self.get_auth(data)
+        self.bp: dict = data
 
+        # Check for validity of blueprint if it contains needed components
         self.__check_valid()
+
+        # Misc postprocessing
+        self.__postprocessing()
 
     def __check_valid(self) -> None:
         if "blueprint" not in self.bp:
@@ -44,6 +48,12 @@ class Blueprint:
             return
 
         self.valid = True
+
+    def __postprocessing(self):
+        if self.valid:
+            # Bind authentication to a machine blueprint from master config file if available
+            for dest in self.bp["blueprint"]["deploy"]["destinations"]:
+                dest.update(self.conf.get_auth(dest["machine"]))
 
     def is_active(self) -> bool:
         if not self.valid:
@@ -98,9 +108,3 @@ class Blueprint:
             return ""
 
         return self.bp["blueprint"]["deploy"]["destinations"]
-
-    def get_auth(self, data) -> dict:
-        for dest in data["blueprint"]["deploy"]["destinations"]:
-            dest.update(self.conf.get_auth(dest["machine"]))
-
-        return data

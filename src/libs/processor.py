@@ -12,9 +12,9 @@ class Processor:
     conf: Config
 
     def __init__(self, conf: Config, opts: dict) -> None:
-        self.blueprints = Blueprints(conf)
         self.opts = opts
         self.conf = conf
+        self.blueprints = Blueprints(conf, self.opts.blueprint)
 
         if self.opts.listblueprints:
             self.list_blueprints()
@@ -42,10 +42,9 @@ class Processor:
         sys.exit(0)
 
     def run(self):
-        for bp in self.blueprints.get_blueprints(self.opts.blueprint):
+        for bp in self.blueprints.get_blueprints():
             if bp.is_active():
                 if bp.is_source_local():
-                    print(bp.get_source()["folder"])
-                    bp.set_temp(bp.get_source())
-                #     cp_local = Local(bp)
-                # cp_local.deploy()
+                    bp.get_source()["folder"]
+                    for dest in bp.get_destinatons():
+                        print(dest)

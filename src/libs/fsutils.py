@@ -1,6 +1,8 @@
 import os
 import shutil
+
 from loguru import logger
+
 from .blueprint import Blueprint
 
 
@@ -26,7 +28,7 @@ class Local:
         if stype == "folder":
             try:
                 source_files = []
-                for (root, _, files) in os.walk(ssource, topdown=True):
+                for root, _, files in os.walk(ssource, topdown=True):
                     pth = root.replace(ssource, "")
                     filtered = False
                     if "filter" in src:
@@ -46,6 +48,7 @@ class Local:
         print(source_files)
 
     def deploy(self):
+        print("here?")
         return
         try:
             destinations = self.bp.get_destinatons()
@@ -67,6 +70,11 @@ class Local:
 
 
 class Remote:
+    bp: Blueprint = None
+
+    def __init__(self, bp: Blueprint) -> None:
+        self.bp = bp  # Load blueprint
+
     def source(self):
         pass
 

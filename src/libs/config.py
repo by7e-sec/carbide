@@ -81,7 +81,7 @@ class Config:
         if machine in self.conf["authentication"]:
             return self.conf["authentication"][machine]
         elif machine == "local":
-            return {}
+            return {"local": True}
 
         logger.warning(f"Authentication for machine {machine} is not in global config file!")
         return {}
