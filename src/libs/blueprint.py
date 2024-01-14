@@ -124,7 +124,20 @@ class Blueprint:
         return self.bp["blueprint"]["description"].strip()
 
     def get_kind(self) -> str:
-        return "rsync"
+        """
+        Get kind of a blueprint. Current supported types:
+         - scp
+
+        Returns:
+            bool Is blueprint active
+        """
+        if not self.valid:
+            return ""
+
+        if "kind" not in self.bp["blueprint"]:
+            return "sftp"
+
+        return self.bp["blueprint"]["kind"]
 
     def get_temp(self) -> str:
         """

@@ -4,6 +4,7 @@ from colorama import Fore, Style
 
 from .blueprints import Blueprints
 from .config import Config
+from .transport import Transport
 
 
 class Processor:
@@ -52,6 +53,6 @@ class Processor:
         for bp in self.blueprints.get_blueprints():
             if bp.is_active():
                 if bp.is_source_local():
-                    bp.get_source()["folder"]
+                    Transport(bp)
                     for dest in bp.get_destinatons():
                         print(dest)

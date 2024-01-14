@@ -1,9 +1,12 @@
+import os
+
 import paramiko
 from loguru import logger
 
 
 class Scp:
-    auth = {"server": "localhost", "port": 22, "user": None, "pass": None, "key": None, "keypass": None}
+    # hostname, port=22, username=None, password=None, pkey=None, key_filename=None
+    auth = {"hostname": "localhost", "port": 22, "username": None, "password": None, "pkey": None, "key_filename": None}
     client = None
 
     def __init__(self, auth: dict):
@@ -20,7 +23,10 @@ class Scp:
         except paramiko.AuthenticationException as e:
             logger.warning(f"Authentication for machine {e} is not in global config file!")
 
-    def copy(self, files: list):
+    def copy(self, files: list, dest_folder: str):
         scp = paramiko.SFTPClient(self.client.get_transport())
         for file in files:
-            scp.put(file[0], file[1])
+            if os.path.isdir(file[0]):
+                scp.mkdir(file[1])
+            else:
+                scp.put(file[0], os.path.join(dest_folder, file[1]))
