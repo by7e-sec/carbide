@@ -14,12 +14,16 @@ class Processor:
     def __init__(self, conf: Config, opts: dict) -> None:
         self.opts = opts
         self.conf = conf
-        self.blueprints = Blueprints(conf, self.opts.blueprint)
+        self.blueprints = Blueprints(conf, [] if self.opts.listblueprints else self.opts.blueprint)
 
         if self.opts.listblueprints:
             self.list_blueprints()
 
     def list_blueprints(self) -> None:
+        """
+        Pretty display the list of blueprints by name, validity, activity, type,
+        and description, and exit.
+        """
         # Colors
         bright_green = Style.BRIGHT + Fore.GREEN
         dim_red = Style.DIM + Fore.RED
@@ -41,7 +45,10 @@ class Processor:
 
         sys.exit(0)
 
-    def run(self):
+    def run(self) -> None:
+        """
+        Run blueprint
+        """
         for bp in self.blueprints.get_blueprints():
             if bp.is_active():
                 if bp.is_source_local():

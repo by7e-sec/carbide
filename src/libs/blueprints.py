@@ -41,7 +41,13 @@ class Blueprints:
                 else:
                     logger.error(f"`{bp_name}` is not in a list of valid blueprints!")
 
-    def list_all(self) -> dict:
+    def list_all(self) -> List[dict]:
+        """
+        Returns a brief information about blueprints. Used with `-l` flag
+
+        Returns
+            list[dict]
+        """
         out = {}
         for bp in self.bps:
             out[bp.get_name()] = {
@@ -53,5 +59,11 @@ class Blueprints:
 
         return out
 
-    def get_blueprints(self):
+    def get_blueprints(self) -> list:
+        """
+        Return a list of blueprints, regardless of whether they're valid or not.
+
+        Returns
+            list List of blueprints
+        """
         return self.bps

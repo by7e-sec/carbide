@@ -7,6 +7,10 @@ from libs.config import Config
 
 
 class Blueprint:
+    """
+    Blueprint
+    """
+
     name: str = ""
     bp: dict = {}
     valid: bool = False
@@ -26,6 +30,9 @@ class Blueprint:
         self.__postprocessing()
 
     def __check_valid(self) -> None:
+        """
+        Check validity of a blueprint
+        """
         if "blueprint" not in self.bp:
             logger.error("Blueprint is not wrapped in `blueprint` structure!")
             return
@@ -50,12 +57,22 @@ class Blueprint:
         self.valid = True
 
     def __postprocessing(self):
+        """
+        Misc. blueprint postprocessing
+        """
         if self.valid:
             # Bind authentication to a machine blueprint from master config file if available
             for dest in self.bp["blueprint"]["deploy"]["destinations"]:
                 dest.update(self.conf.get_auth(dest["machine"]))
 
     def is_active(self) -> bool:
+        """
+        Clieck if a blueprint is active. It can be disabled with
+        'active: false' directive in the blueprint
+
+        Returns:
+            bool Is blueprint active
+        """
         if not self.valid:
             return False
 
@@ -65,18 +82,42 @@ class Blueprint:
         return self.bp["blueprint"]["active"]
 
     def is_valid(self) -> bool:
+        """
+        Is blueprint even valid?
+
+        Return
+            bool Validity of the blueprint as checked by __check_valid
+        """
         return self.valid
 
-    def set_config(self, conf: Config):
+    def set_config(self, conf: Config) -> None:
+        """
+        Set instance of config file. Usually it's set automatically
+        """
         self.conf = conf
 
-    def set_temp(self, tmp: str):
+    def set_temp(self, tmp: str) -> None:
+        """
+        Set temporary folder for some operations
+        """
         self.tmp_folder = tmp
 
     def get_name(self) -> str:
+        """
+        Get blueprint (file) name
+
+        Returns
+            str Blueprint filename with stipped paths and file extension
+        """
         return self.name
 
     def get_description(self) -> str:
+        """
+        Get optional blueprint description
+
+        Returns
+            str Blueprint optional description or empty string if the blueprint isn't valid
+        """
         if not self.valid or "description" not in self.bp["blueprint"]:
             return ""
 
@@ -85,26 +126,50 @@ class Blueprint:
     def get_kind(self) -> str:
         return "rsync"
 
-    def get_temp(self):
+    def get_temp(self) -> str:
+        """
+        Get temporary folder if one is set or create a new one
+
+        Returns
+            str Temporary folder path
+        """
         if self.tmp_folder == "":
             self.tmp_folder = tempfile.mkdtemp()
 
         return self.tmp_folder
 
-    def is_source_local(self):
+    def is_source_local(self) -> bool:
+        """
+        Checks if source machine is local
+
+        Returns
+            bool
+        """
         machine = self.bp["blueprint"]["deploy"]["source"]["machine"]
         data = self.conf.get_machine(machine)
 
         return data["local"]
 
     def get_source(self) -> str:
+        """
+        Get source folder
+
+        Returns
+            str Source folder or empty string if the blueprint isn't valid
+        """
         if not self.valid:
             return ""
 
         return self.bp["blueprint"]["deploy"]["source"]
 
     def get_destinatons(self) -> list:
+        """
+        Get list of destinations
+
+        Returns
+            list List of destination or empty list of the blueprint isn't valid
+        """
         if not self.valid:
-            return ""
+            return []
 
         return self.bp["blueprint"]["deploy"]["destinations"]
