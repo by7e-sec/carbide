@@ -53,6 +53,7 @@ class Processor:
         for bp in self.blueprints.get_blueprints():
             if bp.is_active():
                 if bp.is_source_local():
-                    Transport(bp)
+                    tx = Transport(bp)
                     for dest in bp.get_destinatons():
-                        print(dest)
+                        tx.authenticate(dest["machine"])
+                        tx.copy_files(dest["folder"])

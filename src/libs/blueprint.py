@@ -37,6 +37,14 @@ class Blueprint:
             logger.error("Blueprint is not wrapped in `blueprint` structure!")
             return
 
+        if "kind" not in self.bp["blueprint"]:
+            logger.error("Kind is missing from the blueprint!")
+            return
+
+        if self.bp["blueprint"]["kind"] not in ["sftp", "local"]:
+            logger.error("Invalid kind of transport specified in blueprint!")
+            return
+
         if "deploy" not in self.bp["blueprint"]:
             logger.error("Deploy is missing from the blueprint!")
             return
@@ -64,6 +72,17 @@ class Blueprint:
             # Bind authentication to a machine blueprint from master config file if available
             for dest in self.bp["blueprint"]["deploy"]["destinations"]:
                 dest.update(self.conf.get_auth(dest["machine"]))
+                dest.update(self.conf.get_machine(dest["machine"]))
+
+    def get_auth_dict(self, machine: str) -> bool:
+        auth = self.conf.get_auth(machine)
+        auth.update(self.conf.get_machine(machine))
+
+        auth_out = {}
+        for key in ["username", "password", "hostname", "port"]:
+            auth_out.update({key: auth[key]})
+
+        return auth_out
 
     def is_active(self) -> bool:
         """
@@ -126,7 +145,7 @@ class Blueprint:
     def get_kind(self) -> str:
         """
         Get kind of a blueprint. Current supported types:
-         - scp
+         - sftp
 
         Returns:
             bool Is blueprint active
