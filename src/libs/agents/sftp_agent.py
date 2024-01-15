@@ -35,12 +35,19 @@ class SftpAgent:
     def copy_files(self, files: list, dest_folder: str):
         scp = paramiko.SFTPClient.from_transport(self.client.get_transport())
         logger.debug(f"Creating {dest_folder} on remote machine.")
-        scp.mkdir(dest_folder)
+        try:
+            scp.mkdir(dest_folder)
+        except OSError:
+            pass
+
         for file in files:
             dst_file = os.path.join(dest_folder, file[1])
             logger.debug(f"Transfering file {file[0]} to {dest_folder}/{file[1]}")
             if os.path.isdir(file[0]):
-                scp.mkdir(dst_file)
+                try:
+                    scp.mkdir(dst_file)
+                except OSError:
+                    pass
             else:
                 scp.put(file[0], dst_file)
 
