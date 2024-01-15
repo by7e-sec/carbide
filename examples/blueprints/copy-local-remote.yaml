@@ -1,0 +1,17 @@
+blueprint:
+  description: Copy local->remote
+  active: true
+  logging: auto
+  kind: sftp
+
+  deploy:
+    source:
+      machine: local
+      type: folder
+      folder: /path/to/local/source/
+      filter:
+        - .git
+
+    destinations:
+      - machine: remote1
+        folder: /path/to/remote/folder/

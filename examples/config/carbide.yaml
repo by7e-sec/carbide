@@ -7,10 +7,10 @@ logging:
   stdout_format: "<green>{time}</green> <level>{message}</level>"
 
 authentication:
-  machine:
+  remote1:
     type: pass
-    user: "{{$REMOTE_USER}}"
-    pass: "{{$REMOTE_PASSWORD}}"
+    username: "{{$REMOTE_USER}}"
+    password: "{{$REMOTE_PASSWORD}}"
 
   sshkey:
     type: ssh-key
@@ -19,3 +19,9 @@ authentication:
 machines:
   local:
     local: true
+
+  remote1:
+    local: false
+    hostname: 10.0.0.1
+    port: 22
+    authenticate: remote1

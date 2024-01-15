@@ -22,7 +22,6 @@ class SftpAgent:
         self.client = None
 
     def authenticate(self, auth: dict):
-        print(auth)
         try:
             client = paramiko.SSHClient()
             client.load_system_host_keys()
@@ -38,10 +37,11 @@ class SftpAgent:
         logger.debug(f"Creating {dest_folder} on remote machine.")
         scp.mkdir(dest_folder)
         for file in files:
+            dst_file = os.path.join(dest_folder, file[1])
             logger.debug(f"Transfering file {file[0]} to {dest_folder}/{file[1]}")
             if os.path.isdir(file[0]):
-                scp.mkdir(os.path.join(dest_folder, file[1]))
+                scp.mkdir(dst_file)
             else:
-                scp.put(file[0], os.path.join(dest_folder, file[1]))
+                scp.put(file[0], dst_file)
 
         logger.debug("Done.")
