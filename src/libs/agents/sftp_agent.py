@@ -3,8 +3,6 @@ import os
 import paramiko
 from loguru import logger
 
-paramiko.util.log_to_file("paramiko.log")
-
 
 class SftpAgent:
     auth: dict = {}
