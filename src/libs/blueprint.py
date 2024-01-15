@@ -71,16 +71,20 @@ class Blueprint:
         if self.valid:
             # Bind authentication to a machine blueprint from master config file if available
             for dest in self.bp["blueprint"]["deploy"]["destinations"]:
-                dest.update(self.conf.get_auth(dest["machine"]))
                 dest.update(self.conf.get_machine(dest["machine"]))
 
-    def get_auth_dict(self, machine: str) -> bool:
-        auth = self.conf.get_auth(machine)
+    def get_auth_dict(self, auth_name: str, machine: str) -> bool:
+        auth = self.conf.get_auth(auth_name)
         auth.update(self.conf.get_machine(machine))
+
+        if "error" in auth:
+            self.valid = False
+            return {}
 
         auth_out = {}
         for key in ["username", "password", "hostname", "port"]:
-            auth_out.update({key: auth[key]})
+            if key in auth:
+                auth_out.update({key: auth[key]})
 
         return auth_out
 

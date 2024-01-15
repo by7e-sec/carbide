@@ -112,5 +112,6 @@ class Config:
         elif machine == "local":
             return {"local": True}
 
-        logger.warning(f"Authentication for machine {machine} is not in global config file!")
-        return {}
+        msg = f"Authentication for machine {machine} is not in global config file!"
+        logger.warning(msg)
+        return {"error": True, "message": msg}

@@ -16,7 +16,6 @@ class Transport:
         self.bp = bp
         self.source_files = []
         self.agent = None
-        self.auth = {}
 
         self.__init_agent()
         self.__index_source_files()
@@ -56,10 +55,7 @@ class Transport:
 
                 for root, dirs, files in os.walk(src["folder"], topdown=True):
                     pth = root.replace(src["folder"], "")
-                    filtered = False
-                    for flt in filters:
-                        if flt in pth:
-                            filtered = True
+                    filtered = self.__filter_items(filters, pth)
 
                     if not filtered:
                         for d in dirs:
@@ -85,13 +81,19 @@ class Transport:
 
         self.source_files = source_files
 
-    def authenticate(self, machine: str) -> None:
+    def authenticate(self, auth_name: str, machine: str) -> None:
         """
         Authenticate remote machine
         """
-        self.auth = self.bp.get_auth_dict(machine)
-        if self.agent:
-            self.agent.authenticate(self.auth)
+        auth = self.bp.get_auth_dict(auth_name, machine)
+        if self.agent and self.bp.is_valid():
+            self.agent.authenticate(auth)
+
+    def is_client_active(self):
+        """
+        Check if client has been initialized / authenticated
+        """
+        return bool(self.agent.client)
 
     def copy_files(self, dest_folder: str) -> None:
         """

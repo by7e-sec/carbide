@@ -1,6 +1,7 @@
 import sys
 
 from colorama import Fore, Style
+from loguru import logger
 
 from .blueprints import Blueprints
 from .config import Config
@@ -55,5 +56,8 @@ class Processor:
                 if bp.is_source_local():
                     tx = Transport(bp)
                     for dest in bp.get_destinatons():
-                        tx.authenticate(dest["machine"])
-                        tx.copy_files(dest["folder"])
+                        tx.authenticate(dest["authenticate"], dest["machine"])
+                        if tx.is_client_active():
+                            tx.copy_files(dest["folder"])
+                        else:
+                            logger.warning("Client has not been initiated! Skipping further processing!")
