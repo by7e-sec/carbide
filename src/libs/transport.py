@@ -18,7 +18,12 @@ class Transport:
         self.agent = None
 
         self.__init_agent()
-        self.__index_source_files()
+        try:
+            self.__index_source_files()
+        except PermissionError as pe:
+            raise PermissionError(pe)
+        except Exception as e:
+            raise Exception(e)
 
     def __init_agent(self) -> None:
         """
@@ -47,37 +52,40 @@ class Transport:
         """
         src = self.bp.get_source()
         if src["type"] == "folder":
-            try:
-                source_files = []
-                filters = []
-                if "filter" in src:
-                    filters = src["filter"]
+            source_files = []
+            filters = []
+            if "filter" in src:
+                filters = src["filter"]
 
-                for root, dirs, files in os.walk(src["folder"], topdown=True):
-                    pth = root.replace(src["folder"], "")
-                    filtered = self.__filter_items(filters, pth)
+            for root, dirs, files in os.walk(src["folder"], topdown=True):
+                pth = root.replace(src["folder"], "")
+                filtered = self.__filter_items(filters, pth)
 
-                    if not filtered:
-                        for d in dirs:
-                            if not self.__filter_items(filters, d):
-                                path = os.path.join(root, d)
-                                source_files.append(
-                                    (
-                                        path,
-                                        path[len(src["folder"]) :],
-                                    )
-                                )
+                if not filtered:
+                    for d in dirs:
+                        if not self.__filter_items(filters, d):
+                            path = os.path.join(root, d)
+                            if not os.access(path, os.R_OK):
+                                raise PermissionError(f"Unable to access: {path}")
 
-                        for file in files:
-                            path = os.path.join(root, file)
                             source_files.append(
                                 (
                                     path,
                                     path[len(src["folder"]) :],
                                 )
                             )
-            except Exception as e:
-                logger.critical(f"Unable to copy data to destination!\n{e}")
+
+                    for file in files:
+                        path = os.path.join(root, file)
+                        if not os.access(path, os.R_OK):
+                            raise PermissionError(f"Unable to access: {path}")
+
+                        source_files.append(
+                            (
+                                path,
+                                path[len(src["folder"]) :],
+                            )
+                        )
 
         self.source_files = source_files
 
@@ -100,6 +108,9 @@ class Transport:
         Copy files
         """
         if self.agent:
-            self.agent.copy_files(self.source_files, dest_folder)
+            if self.source_files == []:
+                logger.warning("Nothing to do.")
+            else:
+                self.agent.copy_files(self.source_files, dest_folder)
         else:
             logger.critical(f"Agent hasn't been initiated properly!")

@@ -54,10 +54,17 @@ class Processor:
         for bp in self.blueprints.get_blueprints():
             if bp.is_active():
                 if bp.is_source_local():
-                    tx = Transport(bp)
-                    for dest in bp.get_destinatons():
-                        tx.authenticate(dest["authenticate"], dest["machine"])
-                        if tx.is_client_active():
-                            tx.copy_files(dest["folder"])
-                        else:
-                            logger.warning("Client has not been initiated! Skipping further processing!")
+                    try:
+                        tx = Transport(bp)
+                        for dest in bp.get_destinatons():
+                            tx.authenticate(dest["authenticate"], dest["machine"])
+                            if tx.is_client_active():
+                                tx.copy_files(dest["folder"])
+                            else:
+                                logger.warning("Client has not been initiated! Skipping further processing!")
+                    except PermissionError as pe:
+                        logger.critical(
+                            f"There was a permission error while running the blueprint: {pe}. Do you need to be root?"
+                        )
+                    # except Exception as e:
+                    #     logger.critical(f"There was an error executing the blueprint: {e}")
