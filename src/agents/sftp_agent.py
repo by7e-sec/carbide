@@ -3,8 +3,10 @@ import os
 import paramiko
 from loguru import logger
 
+from libs.agent import Agent
 
-class SftpAgent:
+
+class SftpAgent(Agent):
     auth: dict = {}
     client: paramiko.SSHClient = None
 

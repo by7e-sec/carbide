@@ -2,7 +2,8 @@ import os
 
 from loguru import logger
 
-from .agents import sftp_agent
+from agents import sftp_agent
+
 from .blueprint import Blueprint
 
 
