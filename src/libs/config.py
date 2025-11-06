@@ -1,3 +1,4 @@
+import getpass
 import os
 import sys
 
@@ -108,7 +109,19 @@ class Config:
             dict {local, {host, port, authentication}}
         """
         if machine in self.conf["authentication"]:
-            return self.conf["authentication"][machine]
+            auth = self.conf["authentication"][machine]
+            if "password" in auth:
+                pwd = auth["password"]
+                if pwd.lower().startswith("{{") and pwd.endswith("}}"):  # special items
+                    print(f"Gathering password for {machine}")
+                    pwd_type = pwd.strip("{}").split(".")
+                    if len(pwd_type) >= 2 and pwd_type[0].lower() == "$env":
+                        pwd = os.environ[pwd_type[1]] if pwd_type[1] in os.environ else None
+                        auth["password"] = pwd
+                    elif pwd_type[0].lower() == "$prompt":
+                        pwd = getpass.getpass() or None
+                        auth["password"] = pwd
+            return auth
         elif machine == "local":
             return {"local": True}
 

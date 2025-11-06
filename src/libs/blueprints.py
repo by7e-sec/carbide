@@ -22,7 +22,10 @@ class Blueprints:
             logger.error(f"Blueprints path {loc} is unreachable!")
 
     def __list(self, loc: str, names: list = []) -> None:
-        blueprints: List[str] = glob(os.path.join(loc, "*.yaml"))
+        """
+        Print the details of a blueprint
+        """
+        blueprints: List[str] = glob(os.path.join(os.path.expanduser(loc), "*.yaml"))
         if not names:  # Load all blueprints
             for blueprint in blueprints:
                 try:

@@ -33,6 +33,7 @@ class SftpAgent(Agent):
             logger.warning(f"Authentication for machine {e} failed!")
 
     def copy_files(self, files: list, dest_folder: str):
+        dest_folder = dest_folder.rstrip("/")
         scp = paramiko.SFTPClient.from_transport(self.client.get_transport())
         logger.debug(f"Creating {dest_folder} on remote machine.")
         try:
