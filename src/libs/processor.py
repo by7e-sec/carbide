@@ -63,7 +63,7 @@ class Processor:
                             else:
                                 logger.warning("Client has not been initiated! Skipping further processing!")
                     except PermissionError as pe:
-                        logger.critical(
+                        logger.error(
                             f"There was a permission error while running the blueprint: {pe}. Do you need to be root?"
                         )
                     # except Exception as e:

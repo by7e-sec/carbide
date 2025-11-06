@@ -5,8 +5,10 @@ blueprint:
   deploy:
     source:
       machine: local
+      runas: root
       folder: /path/to/folder/
 
     destinations:
       - machine: local
+        runas: root
         folder: /path/to/deployed/folder/

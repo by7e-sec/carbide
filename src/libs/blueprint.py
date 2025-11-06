@@ -1,3 +1,4 @@
+import getpass
 import os
 import tempfile
 
@@ -34,32 +35,32 @@ class Blueprint:
         Check validity of a blueprint
         """
         if "blueprint" not in self.bp:
-            logger.error("Blueprint is not wrapped in `blueprint` structure!")
+            logger.error(f"{self.name}: Blueprint is not wrapped in `blueprint` structure!")
             return
 
         if "kind" not in self.bp["blueprint"]:
-            logger.error("Kind is missing from the blueprint!")
+            logger.error(f"{self.name}: Kind is missing from the blueprint!")
             return
 
         if self.bp["blueprint"]["kind"] not in ["sftp", "local"]:
-            logger.error("Invalid kind of transport specified in blueprint!")
+            logger.error(f"{self.name}: Invalid kind of transport specified in blueprint!")
             return
 
         if "deploy" not in self.bp["blueprint"]:
-            logger.error("Deploy is missing from the blueprint!")
+            logger.error(f"{self.name}: Deploy is missing from the blueprint!")
             return
 
         dep = self.bp["blueprint"]["deploy"]
         if "source" not in dep:
-            logger.error("`source` configuration is missing from the `deploy` section!")
+            logger.error(f"{self.name}: `source` configuration is missing from the `deploy` section!")
             return
 
         if "folder" not in dep["source"] and "items" not in dep["source"]:
-            logger.error("`folder` or `items` not defined in `source`")
+            logger.error(f"{self.name}: `folder` or `items` not defined in `source`")
             return
 
         if "destinations" not in dep:
-            logger.error("`destination` configuration is missing from the `deploy` section!")
+            logger.error(f"{self.name}: `destination` configuration is missing from the `deploy` section!")
             return
 
         self.valid = True
@@ -209,3 +210,15 @@ class Blueprint:
             return []
 
         return self.bp["blueprint"]["deploy"]["destinations"]
+
+    def runas_user(self) -> str:
+        """
+        Get executing user
+
+        Returns
+            string username
+        """
+        if not self.valid:
+            return getpass.getuser()
+
+        return self.bp["blueprint"]["deploy"]["runas"]
