@@ -83,6 +83,8 @@ class Config:
             str Blueprints folder
         """
         bp_folder = self.conf["blueprints"] if "blueprints" in self.conf else ""
+        if bp_folder != "":
+            bp_folder = os.path.expanduser(bp_folder)
 
         if not os.path.exists(bp_folder) or bp_folder == "":
             logger.error(f"Blueprint folder '{bp_folder}' doesn't exist!")
