@@ -5,7 +5,7 @@ from typing import List
 import yaml
 from loguru import logger
 
-from .blueprint import Blueprint
+from .blueprint.blueprint import Blueprint
 from .config import Config
 
 

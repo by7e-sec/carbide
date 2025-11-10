@@ -6,6 +6,8 @@ from loguru import logger
 
 from libs.config import Config
 
+from .destinations import Destinations
+
 
 class Blueprint:
     """
@@ -57,6 +59,10 @@ class Blueprint:
 
         if "folder" not in dep["source"] and "items" not in dep["source"]:
             logger.error(f"{self.name}: `folder` or `items` not defined in `source`")
+            return
+
+        if "type" not in dep["source"]:
+            logger.error(f"{self.name}: `type` is not defined in `source`")
             return
 
         if "destinations" not in dep:
@@ -209,7 +215,7 @@ class Blueprint:
         if not self.valid:
             return []
 
-        return self.bp["blueprint"]["deploy"]["destinations"]
+        return Destinations(self.bp["blueprint"]["deploy"]["destinations"])
 
     def runas_user(self) -> str:
         """

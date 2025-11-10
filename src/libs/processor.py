@@ -57,11 +57,14 @@ class Processor:
                     try:
                         tx = Transport(bp)
                         for dest in bp.get_destinatons():
-                            tx.authenticate(dest["authenticate"], dest["machine"])
-                            if tx.is_client_active():
-                                tx.copy_files(dest["folder"])
+                            if not dest.is_local():
+                                tx.authenticate(dest.auth(), dest.get_machine())
+                                if tx.is_client_active():
+                                    tx.copy_files(dest.get_folder())
+                                else:
+                                    logger.warning("Client has not been initiated! Skipping further processing!")
                             else:
-                                logger.warning("Client has not been initiated! Skipping further processing!")
+                                print("local handling isn't implemented yet")
                     except PermissionError as pe:
                         logger.error(
                             f"There was a permission error while running the blueprint: {pe}. Do you need to be root?"

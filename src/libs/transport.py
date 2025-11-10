@@ -4,7 +4,7 @@ from loguru import logger
 
 from agents import sftp_agent
 
-from .blueprint import Blueprint
+from .blueprint.blueprint import Blueprint
 
 
 class Transport:
@@ -87,6 +87,9 @@ class Transport:
                                 path[len(src["folder"]) :],
                             )
                         )
+        else:
+            source_files = []
+            logger.warning("Invalid option. Skipping.")
 
         self.source_files = source_files
 
