@@ -1,4 +1,3 @@
-import logging
 import os
 import re
 from pathlib import Path
@@ -7,9 +6,6 @@ import paramiko
 from loguru import logger
 
 from libs.agent import Agent
-
-logging.basicConfig()
-logging.getLogger("paramiko").setLevel(logging.DEBUG)  # for example
 
 
 class SftpAgent(Agent):
