@@ -107,7 +107,7 @@ class Transport:
         """
         return bool(self.agent.client)
 
-    def copy_files(self, dest_folder: str) -> None:
+    def copy_files(self, dest_folder: str, machine_name: str) -> None:
         """
         Copy files
         """
@@ -115,6 +115,6 @@ class Transport:
             if self.source_files == []:
                 logger.warning("Nothing to do.")
             else:
-                self.agent.copy_files(self.source_files, dest_folder)
+                self.agent.copy_files(self.source_files, dest_folder, machine_name)
         else:
             logger.critical(f"Agent hasn't been initiated properly!")

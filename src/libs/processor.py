@@ -43,6 +43,12 @@ class Processor:
             if bps[bp]["description"] != "":
                 print(Style.DIM + Fore.WHITE + " # " + Fore.MAGENTA + bps[bp]["description"])
 
+            print(Style.BRIGHT + Fore.LIGHTBLUE_EX + " Destinations: " + Style.RESET_ALL)
+            for dest in bps[bp]["destinations"]:
+                is_destination_valid = bright_green + "Valid" if dest.is_valid() else dim_red + "Not valid"
+                is_destination_valid = is_destination_valid + Style.RESET_ALL
+                print(Style.BRIGHT + Fore.WHITE + "  > " + dest.get_machine() + " | " + is_destination_valid)
+
             print(Style.RESET_ALL)
 
         sys.exit(0)
@@ -57,17 +63,23 @@ class Processor:
                     try:
                         tx = Transport(bp)
                         for dest in bp.get_destinatons():
-                            if not dest.is_local():
-                                tx.authenticate(dest.auth(), dest.get_machine())
-                                if tx.is_client_active():
-                                    tx.copy_files(dest.get_folder())
+                            print(dest.get_machine(), end=": ")
+                            if dest.is_valid():
+                                if not dest.is_local():
+                                    tx.authenticate(dest.auth(), dest.get_machine())
+                                    if tx.is_client_active():
+                                        tx.copy_files(dest.get_folder(), dest.get_machine())
+                                    else:
+                                        logger.warning("Client has not been initiated! Skipping further processing!")
                                 else:
-                                    logger.warning("Client has not been initiated! Skipping further processing!")
+                                    print("local handling isn't implemented yet")
                             else:
-                                print("local handling isn't implemented yet")
+                                print(
+                                    f"{Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}"
+                                )
                     except PermissionError as pe:
                         logger.error(
                             f"There was a permission error while running the blueprint: {pe}. Do you need to be root?"
                         )
-                    # except Exception as e:
-                    #     logger.critical(f"There was an error executing the blueprint: {e}")
+                    except Exception as e:
+                        logger.error(f"There was an error executing the blueprint: {e}")

@@ -101,6 +101,7 @@ class Config:
         """
         if "machines" in self.conf and type(self.conf["machines"]) == dict:
             return self.conf["machines"][machine] if machine in self.conf["machines"] else {}
+
         return {}
 
     def get_auth(self, machine) -> dict:

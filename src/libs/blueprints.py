@@ -58,6 +58,7 @@ class Blueprints:
                 "valid": bp.is_valid(),
                 "kind": bp.get_kind(),
                 "description": bp.get_description(),
+                "destinations": bp.get_destinatons(),
             }
 
         return out

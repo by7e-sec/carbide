@@ -215,7 +215,7 @@ class Blueprint:
         if not self.valid:
             return []
 
-        return Destinations(self.bp["blueprint"]["deploy"]["destinations"])
+        return Destinations(self.bp["blueprint"]["deploy"]["destinations"], self.conf)
 
     def runas_user(self) -> str:
         """
