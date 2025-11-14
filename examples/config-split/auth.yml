@@ -1,0 +1,20 @@
+authentication:
+  remote1:
+    type: pass
+    username: a_user
+    password: default_password
+
+  sshkey:
+    type: ssh-key
+    key_filename: ~/.ssh/id_rsa
+    password: ssh_key_password
+
+  sshprompt:
+    type: ssh-key
+    key_filename: ~/.ssh/id_rsa
+    password: "{{$PROMPT}}"
+
+  sshenv:
+    type: ssh-key
+    key_filename: ~/.ssh/id_rsa
+    password: "{{$ENV.PASS_FROM_ENVIRONMENT}}"

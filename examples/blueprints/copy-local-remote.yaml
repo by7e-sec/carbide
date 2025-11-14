@@ -6,7 +6,6 @@ blueprint:
   deploy:
     source:
       machine: local
-      run-as: root
       type: folder
       folder: /path/to/local/source/
       filter:
@@ -14,5 +13,4 @@ blueprint:
 
     destinations:
       - machine: remote1
-        run-as: root
         folder: /path/to/remote/folder/

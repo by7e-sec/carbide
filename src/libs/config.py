@@ -5,13 +5,14 @@ import sys
 import yaml
 from loguru import logger
 
-default_paths = [
-    "/etc/carbide/carbide.yaml",
-    "~/.local/share/carbide/carbide.yaml",
-    "~/.carbide/carbide.yaml",
-    "../config/carbide.yaml",
-    "./config/carbide.yaml",
-    "./carbide.yaml",
+main_config_file: str = "carbide.yaml"
+default_folders: list = [
+    "/etc/carbide/",
+    "~/.local/share/carbide/",
+    "~/.carbide/",
+    "../config/",
+    "./config/",
+    "./",
 ]
 
 
@@ -50,30 +51,65 @@ class Config:
 
             logger.add(sys.stdout, colorize=True, format=ff)
 
-    def __load_config(self, file) -> None:
+    def __load_config(self, folder: str) -> None:
         """
         Attempt to blindly but safely load YAML file...
         """
         try:
-            with open(file, "r") as f:
+            with open(os.path.join(folder, main_config_file), "r") as f:
                 self.conf = yaml.safe_load(f)
+
+            self.__load_external_group(folder, "authentication")
+            self.__load_external_group(folder, "machines")
+
         except Exception as e:
             logger.error(f"Cannot read YAML file!\n{e}")
+            sys.exit(1)
 
     def __scan_default_paths(self) -> None:
         """
         Scan default paths if the path to file isn't provided
         """
-        for file in default_paths:
-            file = os.path.expanduser(file)
-            if os.path.exists(file):
-                print(f"Config found in {file}. Loading...")
-                self.__load_config(file)
+        for folder in default_folders:
+            folder = os.path.expanduser(folder)
+            cfg_file = os.path.join(folder, main_config_file)
+            if os.path.exists(cfg_file):
+                print(f"Config found in {cfg_file}. Loading...")
+                self.__load_config(os.path.dirname(folder))
 
                 return
 
         logger.error("Cannot locate carbide.yaml in default locations! Giving up.")
         sys.exit(1)
+
+    def __get_file_location(self, folder: str, loc: str):
+        fn: str = ""
+
+        if os.path.exists(loc):  # Try opening an absolute path
+            fn = loc
+        else:
+            path = os.path.join(folder, loc)  # Try opening relative location to the config file
+            if os.path.exists(path):
+                fn = path
+
+        return fn
+
+    def __load_external_group(self, folder: str, group: str):
+        grp = self.conf[group]
+        if type(grp) == str:
+            auth_file = self.__get_file_location(folder, grp)
+
+            if auth_file != "":
+                try:
+                    with open(auth_file, "r") as f:
+                        yml_data = yaml.safe_load(f)
+                        self.conf[group] = yml_data[group] if group in yml_data else yml_data
+                except (TypeError, AttributeError):
+                    logger.error(f"Unable to load file '{grp}'!")
+                    sys.exit(1)
+            else:
+                logger.error(f"Unable to load file '{grp}'!")
+                sys.exit(1)
 
     def get_blueprints_location(self) -> str:
         """

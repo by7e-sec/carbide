@@ -9,19 +9,37 @@ logging:
 authentication:
   remote1:
     type: pass
-    username: "{{$REMOTE_USER}}"
-    password: "{{$REMOTE_PASSWORD}}"
+    username: a_user
+    password: default_password
 
   sshkey:
     type: ssh-key
-    pass: "{{$UNIKEY_PASSWORD}}"
+    key_filename: ~/.ssh/id_rsa
+    password: ssh_key_password
+
+  sshprompt:
+    type: ssh-key
+    key_filename: ~/.ssh/id_rsa
+    password: "{{$PROMPT}}"
+
+  sshenv:
+    type: ssh-key
+    key_filename: ~/.ssh/id_rsa
+    password: "{{$ENV.PASS_FROM_ENVIRONMENT}}"
+
 
 machines:
   local:
     local: true
 
   remote1:
-    local: false
     hostname: 10.0.0.1
-    port: 22
     authenticate: remote1
+
+  remote2:
+    hostname: 10.0.0.2
+    authenticate: sshkey
+
+  remote3:
+    hostname: 10.0.0.3
+    authenticate: sshkey
