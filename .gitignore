@@ -4,3 +4,5 @@ config/
 blueprints/
 !examples/blueprints/
 *.log
+.zed
+pyproject.toml
