@@ -54,14 +54,14 @@ class SftpAgent(Agent):
                 src_dir = file[0][: 0 - len(file[1])]
                 link_to = str(Path(file[0]).readlink())
                 symlink = re.sub(r"^" + repr(src_dir)[1:-1], "", link_to)
-                logger.debug(f"Symlinking {dst_file} => {dest_folder}/{symlink}")
+                logger.debug(f"Symlinking {dst_file} => {symlink}")
                 try:  # Remove remote symlink, otherwise we get a "failure"
-                    scp.stat(f"{dest_folder}/{symlink}")
-                    scp.unlink(f"{dest_folder}/{symlink}")
+                    scp.stat(f"{dst_file}")
+                    scp.unlink(f"{dst_file}")
                 except IOError:
                     pass
 
-                scp.symlink(f"{dst_file}", f"{dest_folder}/{symlink}")
+                scp.symlink(f"{symlink}", f"{dst_file}")
             else:
                 logger.debug(f"Copying {file[0]} => {remote_machine}:{dest_folder}/{file[1]}")
                 scp.put(file[0], dst_file)
