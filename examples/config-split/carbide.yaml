@@ -7,5 +7,4 @@ logging:
   stdout_format: "<green>{time}</green> <level>{message}</level>"
 
 authentication: auth.yml
-
 machines: hosts.yml

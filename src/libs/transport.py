@@ -46,7 +46,7 @@ class Transport:
                 return True
         return False
 
-    def __index_source_files(self):
+    def __index_source_files(self) -> None:
         """
         Readies files to be transferred by indexing folder structure,
         and stripping the source folder from the destination

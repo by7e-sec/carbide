@@ -9,7 +9,7 @@ blueprint:
       type: folder
       folder: /path/to/local/source/
       filter:
-        - .git
+        - .git # Ignores the .git folder and its contents
 
     destinations:
       - machine: remote1

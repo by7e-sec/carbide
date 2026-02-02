@@ -82,7 +82,7 @@ class Config:
         logger.error("Cannot locate carbide.yaml in default locations! Giving up.")
         sys.exit(1)
 
-    def __get_file_location(self, folder: str, loc: str):
+    def __get_file_location(self, folder: str, loc: str) -> str:
         fn: str = ""
 
         if os.path.exists(loc):  # Try opening an absolute path
@@ -94,7 +94,12 @@ class Config:
 
         return fn
 
-    def __load_external_group(self, folder: str, group: str):
+    def __load_external_group(self, folder: str, group: str) -> None:
+        """
+        Load possible external group from yaml file and bind it to existing config structure
+
+        Returns None
+        """
         grp = self.conf[group]
         if type(grp) == str:
             auth_file = self.__get_file_location(folder, grp)

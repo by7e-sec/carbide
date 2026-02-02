@@ -1,6 +1,6 @@
 blueprint:
   description: An active blueprint description
-  active: true
+  active: false
 
   deploy:
     source:

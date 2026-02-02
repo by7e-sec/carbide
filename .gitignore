@@ -5,4 +5,5 @@ blueprints/
 !examples/blueprints/
 *.log
 .zed
+.vscode
 pyproject.toml
