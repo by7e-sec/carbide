@@ -118,3 +118,16 @@ class Transport:
                 self.agent.copy_files(self.source_files, dest_folder, machine_name)
         else:
             logger.critical(f"Agent hasn't been initiated properly!")
+
+    def run_commands(self, commands: list):
+        """
+        Execute remote or local commands / scripts
+        """
+        if self.agent:
+            for cmd in ["commands", "scripts"]:
+                if commands[cmd] != []:
+                    logger.debug(f"Executing remote {cmd}:")
+                    self.agent.run_commands(commands[cmd])
+
+        else:
+            logger.critical(f"Agent hasn't been initiated properly!")

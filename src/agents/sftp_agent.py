@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from pathlib import Path
 
 import paramiko
@@ -34,7 +35,7 @@ class SftpAgent(Agent):
         except paramiko.AuthenticationException as e:
             logger.warning(f"Authentication for machine {e} failed!")
 
-    def copy_files(self, files: list, dest_folder: str, remote_machine: str):
+    def copy_files(self, files: list, dest_folder: str, remote_machine: str) -> None:
         dest_folder = dest_folder.rstrip("/")
         scp = paramiko.SFTPClient.from_transport(self.client.get_transport())
         try:
@@ -67,3 +68,17 @@ class SftpAgent(Agent):
                 scp.put(file[0], dst_file)
 
         logger.debug("Done.")
+
+    def run_commands(self, commands: list) -> None:
+        """
+        Execute remote commands
+        """
+        for cmd in commands:
+            logger.debug(f"Executing remote command: {cmd}")
+            _, stdout, stderr = self.client.exec_command(cmd)
+            out = stdout.read().decode("utf-8")
+            err = stderr.read().decode("utf-8")
+            if err:
+                logger.error(f"Remote error occured: {err}")
+                logger.error(f"stdout was: {out}")
+            time.sleep(0.1)

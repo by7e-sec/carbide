@@ -191,7 +191,9 @@ Options:
 ```
 
 `-c ` offers an option to specify a custom path to carbide.yaml file
+
 `-b ` offers an option to execute a single or a set of blueprints. By default Carbide executes all valid and active blueprints
+
 `-l ` provides a list of blueprints, their status (active or invalid) and so on. Example:
 
 ```bash

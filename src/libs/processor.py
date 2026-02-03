@@ -68,7 +68,9 @@ class Processor:
                                 if not dest.is_local():
                                     tx.authenticate(dest.auth(), dest.get_machine())
                                     if tx.is_client_active():
+                                        tx.run_commands(dest.get_remote_commands("before"))
                                         tx.copy_files(dest.get_folder(), dest.get_machine())
+                                        tx.run_commands(dest.get_remote_commands("after"))
                                     else:
                                         logger.warning("Client has not been initiated! Skipping further processing!")
                                 else:

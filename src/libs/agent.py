@@ -18,3 +18,7 @@ class Agent(ABC):
     @abstractmethod
     def copy_files(self, files: list, dest_folder: str, remote_machine: str):
         logger.warning("`copy_files` should be properly initialized")
+
+    @abstractmethod
+    def run_commands(self, commands: dict):
+        logger.warning("`run_before` should be properly initialized")
