@@ -14,3 +14,9 @@ blueprint:
     destinations:
       - machine: remote1
         folder: /path/to/remote/folder/
+        run-commands-after:
+          - service nginx stop
+          - service nginx start
+
+      - machine: remote2
+        folder: /path/to/remote/folder/

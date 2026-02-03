@@ -46,6 +46,10 @@ machines:
     hostname: 10.0.0.1
     authenticate: remote1
 
+  remote2:
+    hostname: 10.0.0.2
+    authenticate: remote1
+
 ```
 
 Note: Unless specified specifically through command line, carbide.yaml needs to be in one of the following folders (it's autodetected and in that order):
@@ -150,6 +154,14 @@ blueprint:
     destinations:
       - machine: remote1
         folder: /path/to/remote/folder/
+
+    destinations:
+      - machine: remote2
+        folder: /path/to/remote/folder/
+        run-commands-before:
+          - service nginx stop
+        run-commands-after:
+          - service nginx start
 ```
 
 Blueprints can be be deactivated by `active` switch (default is "active").
@@ -172,6 +184,8 @@ As the title implies, you can specify multiple destinations, consisting of machi
 `machine` handles the authentication, hostname (or IP) specified in `machines` section of `carbide.yaml` filename.
 
 `folder` is the destination folder of the contents specified in `source`
+
+`run-commands-before` and `run-commands-after` are directives that execute commands on (remote) machine before or after deployment respectively.
 
 ## Running Carbide
 
