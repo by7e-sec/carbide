@@ -5,7 +5,7 @@ colorama==0.4.6
 colour==0.1.5
 cryptography==46.0.5
 distlib==0.4.0
-filelock==3.20.3
+filelock==3.24.3
 flake8==7.3.0
 identify==2.6.16
 invoke==2.2.1
@@ -13,7 +13,7 @@ loguru==0.7.3
 mccabe==0.7.0
 nodeenv==1.10.0
 paramiko==3.5.1
-platformdirs==4.5.1
+platformdirs==4.9.2
 pre_commit==4.5.1
 pycodestyle==2.14.0
 pycparser==3.0
@@ -24,4 +24,4 @@ PyYAML==6.0.3
 six==1.17.0
 sysrsync==1.1.1
 toml==0.10.2
-virtualenv==20.36.1
+virtualenv==20.38.0
