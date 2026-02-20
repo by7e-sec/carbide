@@ -46,6 +46,8 @@ class SftpAgent(Agent):
 
         scp = paramiko.SFTPClient.from_transport(transport)
         if not scp:
+            logger.warning("Unable to initialize SFTP client!")
+            logger.debug("paramiko.SFTPClient.from_transport() returned None")
             return False
 
         try:
@@ -86,9 +88,11 @@ class SftpAgent(Agent):
         return True
 
     def create_backup(self, source_folder: str, dest_folder: str) -> bool:
+        # TODO
         return False
 
     def move_final(self, source_folder: str, dest_folder: str) -> bool:
+        # TODO
         return False
 
     def run_commands(self, commands: list) -> None:

@@ -28,5 +28,5 @@ class Agent(ABC):
         logger.warning("`move_final` should be properly initialized")
 
     @abstractmethod
-    def run_commands(self, commands: dict) -> None:
+    def run_commands(self, commands: list) -> None:
         logger.warning("`run_before` should be properly initialized")

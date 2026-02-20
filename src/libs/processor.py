@@ -70,19 +70,18 @@ class Processor:
                                     tx.authenticate(dest.auth(), dest.get_machine())
                                     if tx.is_client_active():
                                         tx.run_commands(dest.get_remote_commands("before"))
-                                        tx.copy_files(dest.get_folder(), dest.get_machine())
+                                        files_cp = tx.copy_files(dest.get_folder(), dest.get_machine())
+                                        if not files_cp:
+                                            logger.warning("Error in copying files! Skipping further processing!")
+                                            continue
                                         tx.run_commands(dest.get_remote_commands("after"))
                                     else:
                                         logger.warning("Client has not been initiated! Skipping further processing!")
                                 else:
                                     print("local handling isn't implemented yet")
                             else:
-                                print(
-                                    f"{Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}"
-                                )
+                                print(f"{Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}")
                     except PermissionError as pe:
-                        logger.error(
-                            f"There was a permission error while running the blueprint: {pe}. Do you need to be root?"
-                        )
+                        logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")
                     except Exception as e:
                         logger.error(f"There was an error executing the blueprint: {e}")
