@@ -4,19 +4,19 @@ from loguru import logger
 
 from agents import sftp_agent
 
+from .agent import Agent
 from .blueprint.blueprint import Blueprint
 
 
 class Transport:
-    bp: Blueprint = None
+    bp: Blueprint
     source_files: list = []
-    agent = None
+    agent: Agent
     auth = []
 
     def __init__(self, bp: Blueprint) -> None:
         self.bp = bp
         self.source_files = []
-        self.agent = None
 
         self.__init_agent()
         try:
@@ -51,7 +51,7 @@ class Transport:
         Readies files to be transferred by indexing folder structure,
         and stripping the source folder from the destination
         """
-        src = self.bp.get_source()
+        src: dict = self.bp.get_source()
         if src["type"] == "folder":
             source_files = []
             filters = []
@@ -97,7 +97,7 @@ class Transport:
         """
         Authenticate remote machine
         """
-        auth = self.bp.get_auth_dict(auth_name, machine)
+        auth = self.bp.get_auth(auth_name, machine)
         if self.agent and self.bp.is_valid():
             self.agent.authenticate(auth)
 
@@ -117,9 +117,9 @@ class Transport:
             else:
                 self.agent.copy_files(self.source_files, dest_folder, machine_name)
         else:
-            logger.critical(f"Agent hasn't been initiated properly!")
+            logger.critical("Agent hasn't been initiated properly!")
 
-    def run_commands(self, commands: list):
+    def run_commands(self, commands: dict):
         """
         Execute remote or local commands / scripts
         """
@@ -130,4 +130,4 @@ class Transport:
                     self.agent.run_commands(commands[cmd])
 
         else:
-            logger.critical(f"Agent hasn't been initiated properly!")
+            logger.critical("Agent hasn't been initiated properly!")

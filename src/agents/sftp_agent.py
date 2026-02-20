@@ -11,7 +11,7 @@ from libs.agent import Agent
 
 class SftpAgent(Agent):
     auth: dict = {}
-    client: paramiko.SSHClient = None
+    client: paramiko.SSHClient
 
     def __init__(self):
         self.auth = {
@@ -22,7 +22,8 @@ class SftpAgent(Agent):
             "pkey": None,
             "key_filename": None,
         }
-        self.client = None
+
+        self.client = paramiko.SSHClient()
 
     def authenticate(self, auth: dict):
         try:
@@ -35,39 +36,60 @@ class SftpAgent(Agent):
         except paramiko.AuthenticationException as e:
             logger.warning(f"Authentication for machine {e} failed!")
 
-    def copy_files(self, files: list, dest_folder: str, remote_machine: str) -> None:
+    def copy_files(self, files: list, dest_folder: str, remote_machine: str) -> bool:
         dest_folder = dest_folder.rstrip("/")
-        scp = paramiko.SFTPClient.from_transport(self.client.get_transport())
+        transport = self.client.get_transport()
+        if not transport:
+            logger.warning("Unable to identify transport protocol!")
+            logger.debug("self.client.get_transport() returned None")
+            return False
+
+        scp = paramiko.SFTPClient.from_transport(transport)
+        if not scp:
+            return False
+
         try:
             scp.mkdir(dest_folder)
             logger.debug(f"Creating {dest_folder} on {remote_machine}.")
         except OSError:
             pass
 
-        for file in files:
-            dst_file = os.path.join(dest_folder, file[1])
-            if os.path.isdir(file[0]):
-                try:
-                    scp.mkdir(dst_file)
-                except OSError:
-                    pass
-            elif os.path.islink(file[0]):
-                src_dir = file[0][: 0 - len(file[1])]
-                link_to = str(Path(file[0]).readlink())
-                symlink = re.sub(r"^" + repr(src_dir)[1:-1], "", link_to)
-                logger.debug(f"Symlinking {dst_file} => {symlink}")
-                try:  # Remove remote symlink, otherwise we get a "failure"
-                    scp.stat(f"{dst_file}")
-                    scp.unlink(f"{dst_file}")
-                except IOError:
-                    pass
+        try:
+            for file in files:
+                dst_file = os.path.join(dest_folder, file[1])
+                if os.path.isdir(file[0]):
+                    try:
+                        scp.mkdir(dst_file)
+                    except OSError:
+                        pass
+                elif os.path.islink(file[0]):
+                    src_dir = file[0][: 0 - len(file[1])]
+                    link_to = str(Path(file[0]).readlink())
+                    symlink = re.sub(r"^" + repr(src_dir)[1:-1], "", link_to)
+                    logger.debug(f"Symlinking {dst_file} => {symlink}")
+                    try:  # Remove remote symlink, otherwise we get a "failure"
+                        scp.stat(f"{dst_file}")
+                        scp.unlink(f"{dst_file}")
+                    except IOError:
+                        pass
 
-                scp.symlink(f"{symlink}", f"{dst_file}")
-            else:
-                logger.debug(f"Copying {file[0]} => {remote_machine}:{dest_folder}/{file[1]}")
-                scp.put(file[0], dst_file)
+                    scp.symlink(f"{symlink}", f"{dst_file}")
+                else:
+                    logger.debug(f"Copying {file[0]} => {remote_machine}:{dest_folder}/{file[1]}")
+                    scp.put(file[0], dst_file)
+
+        except Exception as e:
+            logger.error(f"An error {e} has occured during copying files... Aborting!")
+            return False
 
         logger.debug("Done.")
+        return True
+
+    def create_backup(self, source_folder: str, dest_folder: str) -> bool:
+        return False
+
+    def move_final(self, source_folder: str, dest_folder: str) -> bool:
+        return False
 
     def run_commands(self, commands: list) -> None:
         """

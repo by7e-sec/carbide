@@ -1,4 +1,5 @@
 import sys
+from optparse import Values
 
 from colorama import Fore, Style
 from loguru import logger
@@ -10,10 +11,10 @@ from .transport import Transport
 
 class Processor:
     blueprints: Blueprints
-    opts: dict
+    opts: Values
     conf: Config
 
-    def __init__(self, conf: Config, opts: dict) -> None:
+    def __init__(self, conf: Config, opts: Values) -> None:
         self.opts = opts
         self.conf = conf
         self.blueprints = Blueprints(conf, [] if self.opts.listblueprints else self.opts.blueprint)

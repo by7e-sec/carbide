@@ -1,6 +1,7 @@
 import getpass
 import os
 import tempfile
+from typing import Any, Dict
 
 from loguru import logger
 
@@ -21,10 +22,10 @@ class Blueprint:
     conf: Config
 
     def __init__(self, filename: str, data: dict, conf: Config) -> None:
-        self.name: str = os.path.splitext(filename)[0]
-        self.conf: Config = conf
+        self.name = os.path.splitext(filename)[0]
+        self.conf = conf
         self.tmp_folder = ""
-        self.bp: dict = data
+        self.bp = data
 
         # Check for validity of blueprint if it contains needed components
         self.__check_valid()
@@ -80,15 +81,16 @@ class Blueprint:
             for dest in self.bp["blueprint"]["deploy"]["destinations"]:
                 dest.update(self.conf.get_machine(dest["machine"]))
 
-    def get_auth_dict(self, auth_name: str, machine: str) -> bool:
+    def get_auth(self, auth_name: str, machine: str) -> Dict:
+        auth_out: dict = {}
+
         auth = self.conf.get_auth(auth_name)
         auth.update(self.conf.get_machine(machine))
 
-        if "error" in auth:
+        if "error" in auth and auth["error"]:
             self.valid = False
             return {}
 
-        auth_out = {}
         for key in ["username", "password", "hostname", "port"]:
             if key in auth:
                 auth_out.update({key: auth[key]})
@@ -193,7 +195,7 @@ class Blueprint:
 
         return data["local"]
 
-    def get_source(self) -> str:
+    def get_source(self) -> dict:
         """
         Get source folder
 
@@ -201,16 +203,16 @@ class Blueprint:
             str Source folder or empty string if the blueprint isn't valid
         """
         if not self.valid:
-            return ""
+            return {}
 
         return self.bp["blueprint"]["deploy"]["source"]
 
-    def get_destinatons(self) -> list:
+    def get_destinatons(self) -> Any:
         """
         Get list of destinations
 
         Returns
-            list List of destination or empty list of the blueprint isn't valid
+            list List of destination or empty list if the blueprint isn't valid
         """
         if not self.valid:
             return []

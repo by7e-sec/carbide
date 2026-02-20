@@ -7,17 +7,16 @@ class Destination:
     destination: dict = {}
     conf: Config
 
-    def __init__(self, destination, conf: Config):
-        self.destination: dict = destination
-        self.conf: Config = conf
+    def __init__(self, destination: dict, conf: Config):
+        self.destination = destination
+        self.conf = conf
 
     def __getattr__(self, name):
         """
         Set get_ methods for coresponding dictionary names
         """
         if name.startswith("get_") and name != "get_authenticate":
-            x = lambda a: self.destination[a]
-            return partial(x, name[4:])
+            return partial(lambda a: self.destination[a], name[4:])
         else:
             raise AttributeError
 

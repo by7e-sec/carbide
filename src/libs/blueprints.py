@@ -26,11 +26,12 @@ class Blueprints:
         Print the details of a blueprint
         """
         blueprints: List[str] = glob(os.path.join(os.path.expanduser(loc), "*.yaml"))
+        data: dict = {}
         if not names:  # Load all blueprints
             for blueprint in blueprints:
                 try:
                     with open(blueprint) as bp:
-                        data: dict = yaml.safe_load(bp)
+                        data = yaml.safe_load(bp)
                         self.bps.append(Blueprint(os.path.basename(blueprint), data, self.conf))
                 except Exception as e:
                     logger.warning(f"You have an error in blueprint {blueprint}:\n{str(e)}")
@@ -39,19 +40,19 @@ class Blueprints:
                 blueprint = "".join([bp for bp in blueprints if os.path.splitext(os.path.basename(bp))[0] == bp_name])
                 if blueprint != "":
                     with open(blueprint) as bp:
-                        data: dict = yaml.safe_load(bp)
+                        data = yaml.safe_load(bp)
                         self.bps.append(Blueprint(os.path.basename(blueprint), data, self.conf))
                 else:
                     logger.error(f"`{bp_name}` is not in a list of valid blueprints!")
 
-    def list_all(self) -> List[dict]:
+    def list_all(self) -> dict:
         """
         Returns a brief information about blueprints. Used with `-l` flag
 
         Returns
             list[dict]
         """
-        out = {}
+        out: dict = {}
         for bp in self.bps:
             out[bp.get_name()] = {
                 "active": bp.is_active(),

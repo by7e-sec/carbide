@@ -101,7 +101,7 @@ class Config:
         Returns None
         """
         grp = self.conf[group]
-        if type(grp) == str:
+        if type(grp) is str:
             auth_file = self.__get_file_location(folder, grp)
 
             if auth_file != "":
@@ -140,7 +140,7 @@ class Config:
         Returns
             dict {local, {host, port, authentication}}
         """
-        if "machines" in self.conf and type(self.conf["machines"]) == dict:
+        if "machines" in self.conf and type(self.conf["machines"]) is dict:
             return self.conf["machines"][machine] if machine in self.conf["machines"] else {}
 
         return {}
