@@ -6,6 +6,7 @@ import yaml
 from loguru import logger
 
 from .blueprint.blueprint import Blueprint
+from .blueprint.destinations import Destinations
 from .config import Config
 
 
@@ -45,14 +46,14 @@ class Blueprints:
                 else:
                     logger.error(f"`{bp_name}` is not in a list of valid blueprints!")
 
-    def list_all(self) -> dict[str, dict[str, str | bool]]:
+    def list_all(self) -> dict[str, dict[str, str | list[Destinations]]]:
         """
         Returns a brief information about blueprints. Used with `-l` flag
 
         Returns
             list[dict]
         """
-        out: dict[str, dict[str, str | bool]] = {}
+        out: dict[str, dict[str, str | list[Destinations]]] = {}
         for bp in self.bps:
             out[bp.get_name()] = {
                 "active": bp.is_active(),

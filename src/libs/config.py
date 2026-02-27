@@ -1,12 +1,13 @@
 import getpass
 import os
 import sys
+from typing import Any
 
 import yaml
 from loguru import logger
 
 main_config_file: str = "tlisk.yaml"
-default_folders: list = [
+default_folders: list[str] = [
     "/etc/tlisk/",
     "~/.local/share/tlisk/",
     "~/.tlisk/",
@@ -17,7 +18,7 @@ default_folders: list = [
 
 
 class Config:
-    conf = {}
+    conf: dict[str, Any] = {}
 
     def __init__(self, cfgpath: str = "") -> None:
         """
@@ -133,7 +134,7 @@ class Config:
 
         return bp_folder
 
-    def get_machine(self, machine: str) -> dict:
+    def get_machine(self, machine: str) -> dict[str, Any]:
         """
         Get machine details
 
@@ -141,11 +142,12 @@ class Config:
             dict {local, {host, port, authentication}}
         """
         if "machines" in self.conf and type(self.conf["machines"]) is dict:
-            return self.conf["machines"][machine] if machine in self.conf["machines"] else {}
+            if machine in self.conf["machines"]:
+                return self.conf["machines"][machine]
 
         return {}
 
-    def get_auth(self, machine: str) -> dict:
+    def get_auth(self, machine: str) -> dict[str, Any]:
         """
         Gets authentication for a machine from global config file
 

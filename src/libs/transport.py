@@ -10,7 +10,7 @@ from .blueprint.blueprint import Blueprint
 
 class Transport:
     bp: Blueprint
-    source_files: list = []
+    source_files: list[tuple[str, str]] = []
     agent: Agent
     auth = []
 
@@ -51,10 +51,11 @@ class Transport:
         Readies files to be transferred by indexing folder structure,
         and stripping the source folder from the destination
         """
-        src: dict = self.bp.get_source()
+        src: dict[str, str] = self.bp.get_source()
+        source_files: list[tuple[str, str]] = []
+
         if src["type"] == "folder":
-            source_files = []
-            filters = []
+            filters: list[str] = []
             if "filter" in src:
                 filters = src["filter"]
 
@@ -65,7 +66,7 @@ class Transport:
                 if not filtered:
                     for d in dirs:
                         if not self.__filter_items(filters, d):
-                            path = os.path.join(root, d)
+                            path: str = os.path.join(root, d)
                             if not os.access(path, os.R_OK):
                                 raise PermissionError(f"Unable to access: {path}")
 
@@ -112,7 +113,7 @@ class Transport:
         Copy files
         """
         if self.agent:
-            if self.source_files == []:
+            if self.source_files:
                 logger.warning("Nothing to do.")
             else:
                 return self.agent.copy_files(self.source_files, dest_folder, machine_name)

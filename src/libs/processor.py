@@ -1,9 +1,12 @@
 import sys
 import threading
 from optparse import Values
+from threading import Thread
 
 from colorama import Fore, Style
 from loguru import logger
+
+from libs.blueprint.destinations import Destinations
 
 from .blueprint.blueprint import Blueprint
 from .blueprints import Blueprints
@@ -33,24 +36,27 @@ class Processor:
         bright_green = Style.BRIGHT + Fore.GREEN
         dim_red = Style.DIM + Fore.RED
 
-        bps = self.blueprints.list_all()
-        print(Style.BRIGHT + Fore.MAGENTA + "Available blueprints:")
+        bps: dict[str, dict[str, str | list[Destinations]]] = self.blueprints.list_all()
+        print(f"{Style.BRIGHT}{Fore.MAGENTA} Available blueprints:")
         for bp in bps:
             is_valid = bright_green + "Valid" if bps[bp]["valid"] else dim_red + "Not valid"
             is_active = bright_green + "Active" if bps[bp]["active"] else dim_red + "Inactive"
             is_valid = is_valid + Style.RESET_ALL
             is_active = is_active + Style.RESET_ALL
 
-            print(Style.BRIGHT + Fore.YELLOW + bp + ": " + is_valid + Fore.WHITE + " || " + is_active)
-            print(Style.BRIGHT + Fore.BLUE + " Kind: " + bps[bp]["kind"] if bps[bp]["kind"] else "fallback")
+            print(f"{Style.BRIGHT}{Fore.YELLOW}{bp}: {is_valid} {Fore.WHITE} || {is_active}")
+            print(f"{Style.BRIGHT}{Fore.BLUE} Kind: " + str(bps[bp]["kind"]) if bps[bp]["kind"] != "" else "fallback")
             if bps[bp]["description"] != "":
-                print(Style.DIM + Fore.WHITE + " # " + Fore.MAGENTA + bps[bp]["description"])
+                description: str = str(bps[bp]["description"])
+                print(f"{Style.DIM}{Fore.WHITE} # {Fore.MAGENTA}{description}")
 
             print(Style.BRIGHT + Fore.LIGHTBLUE_EX + " Destinations: " + Style.RESET_ALL)
-            for dest in bps[bp]["destinations"]:
-                is_destination_valid = bright_green + "Valid" if dest.is_valid() else dim_red + "Not valid"
+            dests: list[Destinations] = bps[bp]["destinations"]
+            for dest in dests:
+                is_destination_valid: str = bright_green + "Valid" if dest.is_valid() else dim_red + "Not valid"
                 is_destination_valid = is_destination_valid + Style.RESET_ALL
-                print(Style.BRIGHT + Fore.WHITE + "  > " + dest.get_machine() + " | " + is_destination_valid)
+                machine_name: str = str(dest.get_machine())
+                print(f"{Style.BRIGHT}{Fore.WHITE}  > {machine_name} | " + is_destination_valid)
 
             print(Style.RESET_ALL)
 
@@ -94,7 +100,7 @@ class Processor:
         threads: list[threading.Thread] = []
         # execute threads
         for bp in self.blueprints.get_blueprints():
-            t = threading.Thread(target=self.run_blueprint, args=(bp,))
+            t: Thread = threading.Thread(target=self.run_blueprint, args=(bp,))
             threads.append(t)
 
         # Run threads

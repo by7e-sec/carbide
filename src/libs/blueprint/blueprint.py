@@ -1,10 +1,11 @@
 import getpass
 import os
 import tempfile
-from typing import Any, Dict
+from typing import Any
 
 from loguru import logger
 
+from libs.blueprint.destinations import Destinations
 from libs.config import Config
 
 from .destinations import Destinations
@@ -16,16 +17,16 @@ class Blueprint:
     """
 
     name: str = ""
-    bp: dict = {}
+    bp: dict[str, Any] = {}
     valid: bool = False
     tmp_folder: str
     conf: Config
 
-    def __init__(self, filename: str, data: dict, conf: Config) -> None:
+    def __init__(self, filename: str, bp: dict[str, Any], conf: Config) -> None:
         self.name = os.path.splitext(filename)[0]
         self.conf = conf
         self.tmp_folder = ""
-        self.bp = data
+        self.bp = bp
 
         # Check for validity of blueprint if it contains needed components
         self.__check_valid()
@@ -81,8 +82,8 @@ class Blueprint:
             for dest in self.bp["blueprint"]["deploy"]["destinations"]:
                 dest.update(self.conf.get_machine(dest["machine"]))
 
-    def get_auth(self, auth_name: str, machine: str) -> Dict:
-        auth_out: dict = {}
+    def get_auth(self, auth_name: str, machine: str) -> dict[str, Any]:
+        auth_out: dict[str, Any] = {}
 
         auth = self.conf.get_auth(auth_name)
         auth.update(self.conf.get_machine(machine))
@@ -190,12 +191,12 @@ class Blueprint:
         Returns
             bool
         """
-        machine = self.bp["blueprint"]["deploy"]["source"]["machine"]
-        data = self.conf.get_machine(machine)
+        machine: str = self.bp["blueprint"]["deploy"]["source"]["machine"]
+        data: dict[str, Any] = self.conf.get_machine(machine)
 
         return data["local"]
 
-    def get_source(self) -> dict:
+    def get_source(self) -> dict[str, str]:
         """
         Get source folder
 
@@ -207,7 +208,7 @@ class Blueprint:
 
         return self.bp["blueprint"]["deploy"]["source"]
 
-    def get_destinatons(self) -> Any:
+    def get_destinatons(self) -> Destinations | list[Any]:
         """
         Get list of destinations
 
