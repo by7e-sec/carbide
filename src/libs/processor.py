@@ -1,9 +1,11 @@
 import sys
+import threading
 from optparse import Values
 
 from colorama import Fore, Style
 from loguru import logger
 
+from .blueprint.blueprint import Blueprint
 from .blueprints import Blueprints
 from .config import Config
 from .transport import Transport
@@ -15,11 +17,11 @@ class Processor:
     conf: Config
 
     def __init__(self, conf: Config, opts: Values) -> None:
+        self.blueprints = Blueprints(conf, [] if opts.listblueprints else opts.blueprint)
         self.opts = opts
         self.conf = conf
-        self.blueprints = Blueprints(conf, [] if self.opts.listblueprints else self.opts.blueprint)
 
-        if self.opts.listblueprints:
+        if opts.listblueprints:
             self.list_blueprints()
 
     def list_blueprints(self) -> None:
@@ -54,34 +56,51 @@ class Processor:
 
         sys.exit(0)
 
+    def run_blueprint(self, bp: Blueprint) -> None:
+        """
+        Execute seperate blueprint
+        """
+        if bp.is_active():
+            if bp.is_source_local():
+                try:
+                    tx = Transport(bp)
+                    for dest in bp.get_destinatons():
+                        print(dest.get_machine(), end=": ")
+                        if dest.is_valid():
+                            if not dest.is_local():
+                                tx.authenticate(dest.auth(), dest.get_machine())
+                                if tx.is_client_active():
+                                    tx.run_commands(dest.get_remote_commands("before"))
+                                    files_cp = tx.copy_files(dest.get_folder(), dest.get_machine())
+                                    if not files_cp:
+                                        logger.warning("Error in copying files! Skipping further processing!")
+                                        continue
+                                    tx.run_commands(dest.get_remote_commands("after"))
+                                else:
+                                    logger.warning("Client has not been initiated! Skipping further processing!")
+                            else:
+                                print("local handling isn't implemented yet")
+                        else:
+                            print(f"{Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}")
+                except PermissionError as pe:
+                    logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")
+                except Exception as e:
+                    logger.error(f"There was an error executing the blueprint: {e}")
+
     def run(self) -> None:
         """
-        Run blueprint
+        Run blueprints in threaded environment if executed via CLI
         """
+        threads: list[threading.Thread] = []
+        # execute threads
         for bp in self.blueprints.get_blueprints():
-            if bp.is_active():
-                if bp.is_source_local():
-                    try:
-                        tx = Transport(bp)
-                        for dest in bp.get_destinatons():
-                            print(dest.get_machine(), end=": ")
-                            if dest.is_valid():
-                                if not dest.is_local():
-                                    tx.authenticate(dest.auth(), dest.get_machine())
-                                    if tx.is_client_active():
-                                        tx.run_commands(dest.get_remote_commands("before"))
-                                        files_cp = tx.copy_files(dest.get_folder(), dest.get_machine())
-                                        if not files_cp:
-                                            logger.warning("Error in copying files! Skipping further processing!")
-                                            continue
-                                        tx.run_commands(dest.get_remote_commands("after"))
-                                    else:
-                                        logger.warning("Client has not been initiated! Skipping further processing!")
-                                else:
-                                    print("local handling isn't implemented yet")
-                            else:
-                                print(f"{Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}")
-                    except PermissionError as pe:
-                        logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")
-                    except Exception as e:
-                        logger.error(f"There was an error executing the blueprint: {e}")
+            t = threading.Thread(target=self.run_blueprint, args=(bp,))
+            threads.append(t)
+
+        # Run threads
+        for t in threads:
+            t.start()
+
+        # Wait until threads are done
+        for t in threads:
+            t.join()

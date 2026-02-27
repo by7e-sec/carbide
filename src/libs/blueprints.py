@@ -1,6 +1,6 @@
 import os
 from glob import glob
-from typing import List
+from typing import Any, List
 
 import yaml
 from loguru import logger
@@ -13,7 +13,7 @@ class Blueprints:
     bps: List[Blueprint] = []
     conf: Config
 
-    def __init__(self, conf: Config, names: list = []) -> None:
+    def __init__(self, conf: Config, names: list[str] = []) -> None:
         self.conf = conf
         loc: str = conf.get_blueprints_location()
         if loc != "" and os.path.exists(os.path.expanduser(loc)):
@@ -21,12 +21,12 @@ class Blueprints:
         else:
             logger.error(f"Blueprints path {loc} is unreachable!")
 
-    def __list(self, loc: str, names: list = []) -> None:
+    def __list(self, loc: str, names: list[str] = []) -> None:
         """
         Print the details of a blueprint
         """
         blueprints: List[str] = glob(os.path.join(os.path.expanduser(loc), "*.yaml"))
-        data: dict = {}
+        data: dict[Any, Any] = {}
         if not names:  # Load all blueprints
             for blueprint in blueprints:
                 try:
@@ -45,14 +45,14 @@ class Blueprints:
                 else:
                     logger.error(f"`{bp_name}` is not in a list of valid blueprints!")
 
-    def list_all(self) -> dict:
+    def list_all(self) -> dict[str, dict[str, str | bool]]:
         """
         Returns a brief information about blueprints. Used with `-l` flag
 
         Returns
             list[dict]
         """
-        out: dict = {}
+        out: dict[str, dict[str, str | bool]] = {}
         for bp in self.bps:
             out[bp.get_name()] = {
                 "active": bp.is_active(),
@@ -64,7 +64,7 @@ class Blueprints:
 
         return out
 
-    def get_blueprints(self) -> list:
+    def get_blueprints(self) -> list[Blueprint]:
         """
         Return a list of blueprints, regardless of whether they're valid or not.
 

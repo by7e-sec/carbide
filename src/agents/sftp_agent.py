@@ -32,11 +32,12 @@ class SftpAgent(Agent):
 
     @override
     def authenticate(self, auth: dict[str, str | int | None]) -> None:
+        self.auth.update(auth)
         try:
             client: SSHClient = paramiko.SSHClient()
             client.load_system_host_keys()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(**auth)
+            client.connect(self.auth)
 
             self.client = client
         except paramiko.AuthenticationException as e:
