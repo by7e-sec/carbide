@@ -1,7 +1,7 @@
 class MachineNotFoundException(Exception):
-    message: str = ""
+    err: str = ""
 
-    def __init__(self, machine_name):
-        self.message = f"Missing machine {machine_name} in config!"
+    def __init__(self, machine_name: str) -> None:
+        self.err = f"Missing machine {machine_name} in config!"
 
-        super.__init__(self.message)
+        super().__init__(self.err)

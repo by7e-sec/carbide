@@ -145,7 +145,7 @@ class Config:
 
         return {}
 
-    def get_auth(self, machine) -> dict:
+    def get_auth(self, machine: str) -> dict:
         """
         Gets authentication for a machine from global config file
 

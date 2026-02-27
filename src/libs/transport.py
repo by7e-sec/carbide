@@ -34,7 +34,7 @@ class Transport:
         if kind == "sftp":
             self.agent = sftp_agent.SftpAgent()
 
-    def __filter_items(self, filters: list, item: str) -> bool:
+    def __filter_items(self, filters: list[str], item: str) -> bool:
         """
         Check if an item should be filtered out.
 
@@ -107,7 +107,7 @@ class Transport:
         """
         return bool(self.agent.client)
 
-    def copy_files(self, dest_folder: str, machine_name: str) -> None:
+    def copy_files(self, dest_folder: str, machine_name: str) -> bool:
         """
         Copy files
         """
@@ -115,11 +115,13 @@ class Transport:
             if self.source_files == []:
                 logger.warning("Nothing to do.")
             else:
-                self.agent.copy_files(self.source_files, dest_folder, machine_name)
+                return self.agent.copy_files(self.source_files, dest_folder, machine_name)
         else:
             logger.critical("Agent hasn't been initiated properly!")
 
-    def run_commands(self, commands: dict):
+        return False
+
+    def run_commands(self, commands: dict[str, list[str]]) -> None:
         """
         Execute remote or local commands / scripts
         """
