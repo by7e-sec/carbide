@@ -5,7 +5,6 @@ from typing import Any
 
 from loguru import logger
 
-from libs.blueprint.destinations import Destinations
 from libs.config import Config
 
 from .destinations import Destinations

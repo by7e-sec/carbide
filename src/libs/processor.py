@@ -37,7 +37,7 @@ class Processor:
         dim_red = Style.DIM + Fore.RED
 
         bps: dict[str, dict[str, str | list[Destinations]]] = self.blueprints.list_all()
-        print(f"{Style.BRIGHT}{Fore.MAGENTA} Available blueprints:")
+        print(f"{Style.BRIGHT}{Fore.MAGENTA}Available blueprints:")
         for bp in bps:
             is_valid = bright_green + "Valid" if bps[bp]["valid"] else dim_red + "Not valid"
             is_active = bright_green + "Active" if bps[bp]["active"] else dim_red + "Inactive"
@@ -71,7 +71,6 @@ class Processor:
                 try:
                     tx = Transport(bp)
                     for dest in bp.get_destinatons():
-                        print(dest.get_machine(), end=": ")
                         if dest.is_valid():
                             if not dest.is_local():
                                 tx.authenticate(dest.auth(), dest.get_machine())
@@ -85,9 +84,11 @@ class Processor:
                                 else:
                                     logger.warning("Client has not been initiated! Skipping further processing!")
                             else:
-                                print("local handling isn't implemented yet")
+                                print(f"{dest.get_machine()}: local handling isn't implemented yet")
                         else:
-                            print(f"{Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}")
+                            print(
+                                f"{dest.get_machine()}: {Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}"
+                            )
                 except PermissionError as pe:
                     logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")
                 except Exception as e:

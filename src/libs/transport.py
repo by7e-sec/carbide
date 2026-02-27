@@ -113,7 +113,7 @@ class Transport:
         Copy files
         """
         if self.agent:
-            if self.source_files:
+            if self.source_files == []:
                 logger.warning("Nothing to do.")
             else:
                 return self.agent.copy_files(self.source_files, dest_folder, machine_name)

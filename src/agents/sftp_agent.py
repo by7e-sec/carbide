@@ -44,7 +44,7 @@ class SftpAgent(Agent):
             logger.warning(f"Authentication for machine {e} failed!")
 
     @override
-    def copy_files(self, files: list[str], dest_folder: str, remote_machine: str) -> bool:
+    def copy_files(self, files: list[tuple[str, str]], dest_folder: str, remote_machine: str) -> bool:
         dest_folder = dest_folder.rstrip("/")
         transport: Transport | None = self.client.get_transport()
         if not transport:
@@ -58,11 +58,15 @@ class SftpAgent(Agent):
             logger.debug("paramiko.SFTPClient.from_transport() returned None")
             return False
 
-        try:
-            scp.mkdir(dest_folder)
-            logger.debug(f"Creating {dest_folder} on {remote_machine}.")
-        except OSError:
-            pass
+        remote_path: list[str] = os.path.normpath(dest_folder).split(os.sep)
+        for k, _ in enumerate(remote_path):
+            mkpath: str = os.sep.join(remote_path[: k + 1])
+
+            try:
+                scp.mkdir(mkpath)
+                logger.debug(f"Creating {mkpath} on {remote_machine}.")
+            except OSError:
+                continue
 
         try:
             for file in files:
@@ -70,8 +74,9 @@ class SftpAgent(Agent):
                 if os.path.isdir(file[0]):
                     try:
                         scp.mkdir(dst_file)
-                    except OSError:
+                    except OSError:  # Remote folder already exists; no need to throw any error
                         pass
+
                 elif os.path.islink(file[0]):
                     src_dir: str = file[0][: 0 - len(file[1])]
                     link_to: str = str(Path(file[0]).readlink())
@@ -89,7 +94,7 @@ class SftpAgent(Agent):
                     _ = scp.put(file[0], dst_file)
 
         except Exception as e:
-            logger.error(f"An error {e} has occured during copying files... Aborting!")
+            logger.error(f'An error "{e}" has occured during copying files... Aborting!')
             return False
 
         logger.debug("Done.")

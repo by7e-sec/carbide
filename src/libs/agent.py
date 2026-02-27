@@ -16,7 +16,7 @@ class Agent(ABC):
         logger.warning("`authenticate` should be properly initialized!")
 
     @abstractmethod
-    def copy_files(self, files: list[str], dest_folder: str, remote_machine: str) -> bool:
+    def copy_files(self, files: list[tuple[str, str]], dest_folder: str, remote_machine: str) -> bool:
         logger.warning("`copy_files` should be properly initialized")
 
     @abstractmethod
