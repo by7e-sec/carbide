@@ -1,6 +1,9 @@
-# CARBIDE
+> [!IMPORTANT]
+> Carbide is now Tlisk!
 
-Carbide is a blueprint-based deployment system similar to Ansible that aims for simplicity and flexibility
+# Tlisk
+
+Tlisk is a blueprint-based deployment system similar to Ansible that aims for simplicity and flexibility
 
 ## Basic overview
 
@@ -19,15 +22,15 @@ Blueprints are YAML-based configurations where you specify a single source (at t
 ## Installation
 
 ```
-$ python -m venv ~/venvs/carbide
-$ source ~/venvs/carbide/bin/activate
+$ python -m venv ~/venvs/tlisk
+$ source ~/venvs/tlisk/bin/activate
 $ pip install -r requirements.txt
 ```
 
 ## Basic configuration
 
-### carbide.yml
-`/etc/carbide/carbide.yaml`
+### tlisk.yml
+`/etc/tlisk/tlisk.yaml`
 ```yaml
 blueprints:
   /path/to/your/blueprints
@@ -52,11 +55,11 @@ machines:
 
 ```
 
-Note: Unless specified specifically through command line, carbide.yaml needs to be in one of the following folders (it's autodetected and in that order):
+Note: Unless specified specifically through command line, tlisk.yaml needs to be in one of the following folders (it's autodetected and in that order):
 
-- /etc/carbide/
-- ~/.local/share/carbide/
-- ~/.carbide/
+- /etc/tlisk/
+- ~/.local/share/tlisk/
+- ~/.tlisk/
 - ../config/
 - ./config/
 - ./
@@ -87,7 +90,7 @@ Done.
 
 ## Remote machine authentication
 
-Carbide supports 2 types of authentication for machines inside of the `authentication` section:
+Tlisk supports 2 types of authentication for machines inside of the `authentication` section:
 
 - pass: username / password key pair
 - ssh-key: SSH key authentication
@@ -135,7 +138,7 @@ Carbide supports 2 types of authentication for machines inside of the `authentic
 
 ## Blueprints
 
-Blueprints are the meat and potato of Carbide, and at the time of writing, it can only copy from local to remote machine via SFTP. Other modes (like rsync or NFS) are under development.
+Blueprints are the meat and potato of Tlisk, and at the time of writing, it can only copy from local to remote machine via SFTP. Other modes (like rsync or NFS) are under development.
 
 ```yaml
 blueprint:
@@ -166,7 +169,7 @@ blueprint:
 
 Blueprints can be be deactivated by `active` switch (default is "active").
 
-`description` provides a description of a blueprint inside of a command line. More information in [running-carbide](#running-carbide)
+`description` provides a description of a blueprint inside of a command line. More information in [running-tlisk](#running-tlisk)
 
 ### Source
 
@@ -181,19 +184,19 @@ They take in a single source (currently only "local", but ability to have a remo
 
 As the title implies, you can specify multiple destinations, consisting of machine name and destination folder.
 
-`machine` handles the authentication, hostname (or IP) specified in `machines` section of `carbide.yaml` filename.
+`machine` handles the authentication, hostname (or IP) specified in `machines` section of `tlisk.yaml` filename.
 
 `folder` is the destination folder of the contents specified in `source`
 
 `run-commands-before` and `run-commands-after` are directives that execute commands on (remote) machine before or after deployment respectively.
 
-## Running Carbide
+## Running Tlisk
 
 ### Basic commands
 
 ``` bash
-$ ./carbide.py --help
-Usage: carbide.py [options]
+$ ./tlisk.py --help
+Usage: tlisk.py [options]
 
 Options:
   -h, --help            show this help message and exit
@@ -204,15 +207,15 @@ Options:
   -l, --list            List available blueprints and exit
 ```
 
-`-c ` offers an option to specify a custom path to carbide.yaml file
+`-c ` offers an option to specify a custom path to tlisk.yaml file
 
-`-b ` offers an option to execute a single or a set of blueprints. By default Carbide executes all valid and active blueprints
+`-b ` offers an option to execute a single or a set of blueprints. By default Tlisk executes all valid and active blueprints
 
 `-l ` provides a list of blueprints, their status (active or invalid) and so on. Example:
 
 ```bash
-$ ./carbide.py -l
-Config found in ../config/carbide.yaml. Loading...
+$ ./tlisk.py -l
+Config found in ../config/tlisk.yaml. Loading...
 Available blueprints:
 test-local-remote: Valid || Active
  Kind: sftp

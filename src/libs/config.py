@@ -5,11 +5,11 @@ import sys
 import yaml
 from loguru import logger
 
-main_config_file: str = "carbide.yaml"
+main_config_file: str = "tlisk.yaml"
 default_folders: list = [
-    "/etc/carbide/",
-    "~/.local/share/carbide/",
-    "~/.carbide/",
+    "/etc/tlisk/",
+    "~/.local/share/tlisk/",
+    "~/.tlisk/",
     "../config/",
     "./config/",
     "./",
@@ -79,7 +79,7 @@ class Config:
 
                 return
 
-        logger.error("Cannot locate carbide.yaml in default locations! Giving up.")
+        logger.error("Cannot locate tlisk.yaml in default locations! Giving up.")
         sys.exit(1)
 
     def __get_file_location(self, folder: str, loc: str) -> str:
