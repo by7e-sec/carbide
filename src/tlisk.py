@@ -9,14 +9,6 @@ parser = OptionParser()
 parser.add_option("-c", "--config", dest="config", default="", help="Path to config file")
 parser.add_option("-b", "--blueprint", dest="blueprint", action="append", default=[], help="Run specific blueprint (stackable)")
 parser.add_option("-l", "--list", action="store_true", dest="listblueprints", default=False, help="List available blueprints and exit")
-parser.add_option(
-    "-x",
-    "--remote-capabilities",
-    action="store_true",
-    dest="remotecapabilities",
-    default=False,
-    help="List compression capabilities on remote server",
-)
 
 opts, args = parser.parse_args()
 

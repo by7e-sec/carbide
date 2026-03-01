@@ -158,7 +158,6 @@ blueprint:
       - machine: remote1
         folder: /path/to/remote/folder/
 
-    destinations:
       - machine: remote2
         folder: /path/to/remote/folder/
         run-commands-before:

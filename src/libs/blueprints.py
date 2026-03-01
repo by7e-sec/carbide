@@ -46,14 +46,14 @@ class Blueprints:
                 else:
                     logger.error(f"`{bp_name}` is not in a list of valid blueprints!")
 
-    def list_all(self) -> dict[str, dict[str, str | list[Destinations]]]:
+    def list_all(self) -> dict[str, dict[str, str | bool | Destinations]]:
         """
         Returns a brief information about blueprints. Used with `-l` flag
 
         Returns
             list[dict]
         """
-        out: dict[str, dict[str, str | list[Destinations]]] = {}
+        out: dict[str, dict[str, str | bool | Destinations]] = {}
         for bp in self.bps:
             out[bp.get_name()] = {
                 "active": bp.is_active(),

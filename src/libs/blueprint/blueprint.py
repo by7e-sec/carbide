@@ -139,7 +139,7 @@ class Blueprint:
         Get blueprint (file) name
 
         Returns
-            str Blueprint filename with stipped paths and file extension
+            str Blueprint filename with stripped paths and file extension
         """
         return self.name
 

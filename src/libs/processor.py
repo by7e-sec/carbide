@@ -36,7 +36,7 @@ class Processor:
         bright_green = Style.BRIGHT + Fore.GREEN
         dim_red = Style.DIM + Fore.RED
 
-        bps: dict[str, dict[str, str | list[Destinations]]] = self.blueprints.list_all()
+        bps: dict[str, dict[str, str | bool | Destinations]] = self.blueprints.list_all()
         print(f"{Style.BRIGHT}{Fore.MAGENTA}Available blueprints:")
         for bp in bps:
             is_valid = bright_green + "Valid" if bps[bp]["valid"] else dim_red + "Not valid"
@@ -51,7 +51,7 @@ class Processor:
                 print(f"{Style.DIM}{Fore.WHITE} # {Fore.MAGENTA}{description}")
 
             print(Style.BRIGHT + Fore.LIGHTBLUE_EX + " Destinations: " + Style.RESET_ALL)
-            dests: list[Destinations] = bps[bp]["destinations"]
+            dests: Destinations = bps[bp]["destinations"]
             for dest in dests:
                 is_destination_valid: str = bright_green + "Valid" if dest.is_valid() else dim_red + "Not valid"
                 is_destination_valid = is_destination_valid + Style.RESET_ALL
@@ -76,7 +76,7 @@ class Processor:
                                 tx.authenticate(dest.auth(), dest.get_machine())
                                 if tx.is_client_active():
                                     tx.run_commands(dest.get_remote_commands("before"))
-                                    files_cp = tx.copy_files(dest.get_folder(), dest.get_machine())
+                                    files_cp: bool = tx.copy_files(dest.get_folder(), dest.get_machine())
                                     if not files_cp:
                                         logger.warning("Error in copying files! Skipping further processing!")
                                         continue
@@ -87,7 +87,8 @@ class Processor:
                                 print(f"{dest.get_machine()}: local handling isn't implemented yet")
                         else:
                             print(
-                                f"{dest.get_machine()}: {Fore.RED}Destination isn't valid! ({dest.show_destination_error()}){Style.RESET_ALL}"
+                                f"{dest.get_machine()}: {Fore.RED}Destination isn't valid! "
+                                + f"({dest.show_destination_error()}){Style.RESET_ALL}"
                             )
                 except PermissionError as pe:
                     logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")

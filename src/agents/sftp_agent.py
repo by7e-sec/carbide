@@ -16,6 +16,7 @@ from libs.agent import Agent
 class SftpAgent(Agent):
     auth: dict[str, str | int | None]
     client: paramiko.SSHClient
+    tmp_folder: str
 
     @override
     def __init__(self) -> None:
@@ -37,7 +38,7 @@ class SftpAgent(Agent):
             client: SSHClient = paramiko.SSHClient()
             client.load_system_host_keys()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(**self.auth)
+            client.connect(**self.auth)  # pyright: ignore[reportArgumentType]
 
             self.client = client
         except paramiko.AuthenticationException as e:
