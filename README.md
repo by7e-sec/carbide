@@ -204,13 +204,12 @@ Options:
   -b BLUEPRINT, --blueprint=BLUEPRINT
                         Run specific blueprint (stackable)
   -l, --list            List available blueprints and exit
+  -g, --capabilities    List Tlisk's capabilities and exit
+
 ```
-
-`-c ` offers an option to specify a custom path to tlisk.yaml file
-
-`-b ` offers an option to execute a single or a set of blueprints. By default Tlisk executes all valid and active blueprints
-
-`-l ` provides a list of blueprints, their status (active or invalid) and so on. Example:
+ -c offers an option to specify a custom path to tlisk.yaml file
+ -b offers an option to execute a single or a set of blueprints. By default Tlisk executes all valid and active blueprints
+ -l provides a list of blueprints, their status (active or invalid) and so on. Example:
 
 ```bash
 $ ./tlisk.py -l
@@ -236,4 +235,11 @@ test-local-local: Valid || Active
   > local | Valid
   > remote1 | Not valid
 
+```
+
+```bash
+$ ./tlisk.py -g
+Config found in ../config/tlisk.yaml. Loading...
+Tlisk capabilities:
+ - SFTP
 ```
