@@ -7,6 +7,8 @@ from loguru import logger
 class Agent(ABC):
     auth: dict[str, str | int | None]
     client: Any
+    agent_type: str
+    is_builtin: bool
 
     def __init__(self) -> None:
         self.auth = {}
@@ -30,3 +32,8 @@ class Agent(ABC):
     @abstractmethod
     def run_commands(self, commands: list[str]) -> None:
         logger.warning("`run_before` should be properly initialized")
+
+    @classmethod
+    @abstractmethod
+    def get_name(cls) -> str:
+        logger.warning("`get_name` should be properly initialized")

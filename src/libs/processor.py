@@ -1,11 +1,13 @@
 import sys
 import threading
+from argparse import Namespace
 from optparse import Values
 from threading import Thread
 
 from colorama import Fore, Style
 from loguru import logger
 
+from libs import agents_registry
 from libs.blueprint.destinations import Destinations
 
 from .blueprint.blueprint import Blueprint
@@ -19,13 +21,16 @@ class Processor:
     opts: Values
     conf: Config
 
-    def __init__(self, conf: Config, opts: Values) -> None:
+    def __init__(self, conf: Config, opts: Namespace) -> None:
         self.blueprints = Blueprints(conf, [] if opts.listblueprints else opts.blueprint)
         self.opts = opts
         self.conf = conf
 
         if opts.listblueprints:
             self.list_blueprints()
+
+        if opts.listcapabilities:
+            self.list_capabilities()
 
     def list_blueprints(self) -> None:
         """
@@ -60,6 +65,15 @@ class Processor:
 
             print(Style.RESET_ALL)
 
+        sys.exit(0)
+
+    def list_capabilities(self) -> None:
+
+        print(f"{Style.BRIGHT}{Fore.MAGENTA}Tlisk capabilities:{Style.RESET_ALL}")
+        for cap in agents_registry.get_agents().keys():
+            print(" - " + Style.BRIGHT + Fore.GREEN + cap + Style.RESET_ALL)
+
+        print(Style.RESET_ALL)
         sys.exit(0)
 
     def run_blueprint(self, bp: Blueprint) -> None:

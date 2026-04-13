@@ -125,3 +125,9 @@ class SftpAgent(Agent):
                 logger.error(f"Remote error occured: {err}")
                 logger.error(f"stdout was: {out}")
             time.sleep(0.1)
+
+    @classmethod
+    @override
+    def get_name(cls) -> str:
+        "Registry identifier"
+        return "SFTP"

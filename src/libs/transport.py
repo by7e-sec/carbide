@@ -2,8 +2,7 @@ import os
 
 from loguru import logger
 
-from agents import sftp_agent
-
+from . import agents_registry
 from .agent import Agent
 from .blueprint.blueprint import Blueprint
 
@@ -11,7 +10,7 @@ from .blueprint.blueprint import Blueprint
 class Transport:
     bp: Blueprint
     source_files: list[tuple[str, str]] = []
-    agent: Agent
+    agent: Agent | None
     auth = []
 
     def __init__(self, bp: Blueprint) -> None:
@@ -30,9 +29,9 @@ class Transport:
         """
         Init transport agent (SFTP, rsync, local,...)
         """
-        kind = self.bp.get_kind()
-        if kind == "sftp":
-            self.agent = sftp_agent.SftpAgent()
+        kind = self.bp.get_kind().upper()
+        if kind in agents_registry.get_agents():
+            self.agent = agents_registry.instance_agent(kind)
 
     def __filter_items(self, filters: list[str], item: str) -> bool:
         """
@@ -106,6 +105,10 @@ class Transport:
         """
         Check if client has been initialized / authenticated
         """
+
+        if not self.agent:
+            return False
+
         return bool(self.agent.client)
 
     def copy_files(self, dest_folder: str, machine_name: str) -> bool:
