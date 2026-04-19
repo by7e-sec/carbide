@@ -158,14 +158,18 @@ class Blueprint:
 
         return self.tmp_folder
 
-    def get_connection_type(self) -> str:
+    def get_connection_type(self, machine: str) -> str:
         """
         Get connection type from hosts
 
         Returns
             str Connection type (FTP,SFTP,WebDAV...)
         """
-        return ""
+        conn = self.conf.get_machine(machine)
+        if "kind" not in conn:
+            return "invalid"
+
+        return conn["kind"].upper()
 
     def is_source_local(self) -> bool:
         """

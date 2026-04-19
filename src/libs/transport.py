@@ -18,26 +18,6 @@ class Transport:
         self.bp = bp
         self.source_files = []
 
-        self.__init_agent()
-
-        """
-        try:
-            self.__index_local_folder()
-        except PermissionError as pe:
-            raise PermissionError(pe)
-        except Exception as e:
-            raise Exception(e)
-        """
-
-    def __init_agent(self) -> None:
-        """
-        Init transport agent (SFTP, rsync, local,...)
-        """
-        # kind = self.bp.get_kind().upper()
-        kind = "SFTP"
-        if kind in agents_registry.get_agents():
-            self.agent = agents_registry.instance_agent(kind)
-
     def __filter_items(self, filters: list[str], item: str) -> bool:
         """
         Check if an item should be filtered out.
@@ -50,7 +30,7 @@ class Transport:
                 return True
         return False
 
-    def __index_local_folder(self) -> None:
+    def index_source_folder(self) -> None:
         """
         Readies files to be transferred by indexing folder structure,
         and stripping the source folder from the destination
@@ -98,33 +78,43 @@ class Transport:
 
         self.source_files = source_files
 
-    def authenticate(self, auth_name: str, machine: str) -> None:
+    def init_agent(self, auth_name: str, machine: str) -> Agent | None:
         """
-        Authenticate remote machine
+        Instantiate protocol and authenticate remote machine
         """
-        auth = self.bp.get_auth(auth_name, machine)
-        if self.agent and self.bp.is_valid():
-            self.agent.authenticate(auth["auth"])
+        agent: Agent | None = None
+        conn_type: str = self.bp.get_connection_type(machine)
+        if conn_type in agents_registry.get_agents():
+            agent = agents_registry.instance_agent(conn_type)
+        else:
+            raise Exception(f"oops! {machine} returned connecton type {conn_type}")
 
-    def is_client_active(self):
+        # Authenticate agent if possible
+        auth = self.bp.get_auth(auth_name, machine)
+        if agent and self.bp.is_valid():
+            agent.authenticate(auth)
+
+        return agent
+
+    def is_client_active(self, agent: Agent | None) -> bool:
         """
         Check if client has been initialized / authenticated
         """
 
-        if not self.agent:
+        if not agent:
             return False
 
-        return bool(self.agent.client)
+        return bool(agent.client)
 
-    def copy_files(self, dest_folder: str, machine_name: str) -> bool:
+    def copy_files(self, agent: Agent | None, dest_folder: str, machine_name: str) -> bool:
         """
         Copy files
         """
-        if self.agent:
+        if agent:
             if self.source_files == []:
                 logger.warning("Nothing to do.")
             else:
-                return self.agent.copy_files(self.source_files, dest_folder, machine_name)
+                return agent.copy_files(self.source_files, dest_folder, machine_name)
         else:
             logger.critical("Agent hasn't been initiated properly!")
 
@@ -132,17 +122,19 @@ class Transport:
 
     def run(self):
         try:
+            if self.bp.is_source_local():
+                self.index_source_folder()
             for dest in self.bp.get_destinatons():
                 if dest.is_valid():
                     if not dest.is_local():
-                        self.authenticate(dest.auth(), dest.get_machine())
-                        if self.is_client_active():
-                            self.run_commands(dest.get_remote_commands("before"))
-                            files_cp: bool = self.copy_files(dest.get_folder(), dest.get_machine())
+                        agent = self.init_agent(dest.auth(), dest.get_machine())
+                        if self.is_client_active(agent):
+                            self.run_commands(agent, dest.get_remote_commands("before"))
+                            files_cp: bool = self.copy_files(agent, dest.get_folder(), dest.get_machine())
                             if not files_cp:
                                 logger.warning("Error in copying files! Skipping further processing!")
                                 continue
-                            self.run_commands(dest.get_remote_commands("after"))
+                            self.run_commands(agent, dest.get_remote_commands("after"))
                         else:
                             logger.warning("Client has not been initiated! Skipping further processing!")
                     else:
@@ -157,15 +149,15 @@ class Transport:
         except Exception as e:
             logger.error(f"There was an error executing the blueprint: {e}")
 
-    def run_commands(self, commands: dict[str, list[str]]) -> None:
+    def run_commands(self, agent: Agent | None, commands: dict[str, list[str]]) -> None:
         """
         Execute remote or local commands / scripts
         """
-        if self.agent:
+        if agent:
             for cmd in ["commands", "scripts"]:
                 if commands[cmd] != []:
                     logger.debug(f"Executing remote {cmd}:")
-                    self.agent.run_commands(commands[cmd])
+                    agent.run_commands(commands[cmd])
 
         else:
             logger.critical("Agent hasn't been initiated properly!")

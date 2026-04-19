@@ -1,7 +1,6 @@
 import sys
 import threading
 from argparse import Namespace
-from optparse import Values
 from threading import Thread
 
 from colorama import Fore, Style
@@ -17,7 +16,7 @@ from .transport import Transport
 
 class Processor:
     blueprints: Blueprints
-    opts: Values
+    opts: Namespace
     conf: Config
 
     def __init__(self, conf: Config, opts: Namespace) -> None:
