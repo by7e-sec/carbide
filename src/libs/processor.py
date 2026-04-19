@@ -5,7 +5,6 @@ from optparse import Values
 from threading import Thread
 
 from colorama import Fore, Style
-from loguru import logger
 
 from libs import agents_registry
 from libs.blueprint.destinations import Destinations
@@ -81,33 +80,8 @@ class Processor:
         Execute seperate blueprint
         """
         if bp.is_active():
-            if bp.is_source_local():
-                try:
-                    tx = Transport(bp)
-                    for dest in bp.get_destinatons():
-                        if dest.is_valid():
-                            if not dest.is_local():
-                                tx.authenticate(dest.auth(), dest.get_machine())
-                                if tx.is_client_active():
-                                    tx.run_commands(dest.get_remote_commands("before"))
-                                    files_cp: bool = tx.copy_files(dest.get_folder(), dest.get_machine())
-                                    if not files_cp:
-                                        logger.warning("Error in copying files! Skipping further processing!")
-                                        continue
-                                    tx.run_commands(dest.get_remote_commands("after"))
-                                else:
-                                    logger.warning("Client has not been initiated! Skipping further processing!")
-                            else:
-                                print(f"{dest.get_machine()}: local handling isn't implemented yet")
-                        else:
-                            print(
-                                f"{dest.get_machine()}: {Fore.RED}Destination isn't valid! "
-                                + f"({dest.show_destination_error()}){Style.RESET_ALL}"
-                            )
-                except PermissionError as pe:
-                    logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")
-                except Exception as e:
-                    logger.error(f"There was an error executing the blueprint: {e}")
+            tx = Transport(bp)
+            tx.run()
 
     def run(self) -> None:
         """

@@ -1,5 +1,6 @@
 import os
 
+from colorama import Fore, Style
 from loguru import logger
 
 from . import agents_registry
@@ -18,18 +19,22 @@ class Transport:
         self.source_files = []
 
         self.__init_agent()
+
+        """
         try:
-            self.__index_source_files()
+            self.__index_local_folder()
         except PermissionError as pe:
             raise PermissionError(pe)
         except Exception as e:
             raise Exception(e)
+        """
 
     def __init_agent(self) -> None:
         """
         Init transport agent (SFTP, rsync, local,...)
         """
-        kind = self.bp.get_kind().upper()
+        # kind = self.bp.get_kind().upper()
+        kind = "SFTP"
         if kind in agents_registry.get_agents():
             self.agent = agents_registry.instance_agent(kind)
 
@@ -45,7 +50,7 @@ class Transport:
                 return True
         return False
 
-    def __index_source_files(self) -> None:
+    def __index_local_folder(self) -> None:
         """
         Readies files to be transferred by indexing folder structure,
         and stripping the source folder from the destination
@@ -99,7 +104,7 @@ class Transport:
         """
         auth = self.bp.get_auth(auth_name, machine)
         if self.agent and self.bp.is_valid():
-            self.agent.authenticate(auth)
+            self.agent.authenticate(auth["auth"])
 
     def is_client_active(self):
         """
@@ -124,6 +129,33 @@ class Transport:
             logger.critical("Agent hasn't been initiated properly!")
 
         return False
+
+    def run(self):
+        try:
+            for dest in self.bp.get_destinatons():
+                if dest.is_valid():
+                    if not dest.is_local():
+                        self.authenticate(dest.auth(), dest.get_machine())
+                        if self.is_client_active():
+                            self.run_commands(dest.get_remote_commands("before"))
+                            files_cp: bool = self.copy_files(dest.get_folder(), dest.get_machine())
+                            if not files_cp:
+                                logger.warning("Error in copying files! Skipping further processing!")
+                                continue
+                            self.run_commands(dest.get_remote_commands("after"))
+                        else:
+                            logger.warning("Client has not been initiated! Skipping further processing!")
+                    else:
+                        print(f"{dest.get_machine()}: local handling isn't implemented yet")
+                else:
+                    print(
+                        f"{dest.get_machine()}: {Fore.RED}Destination isn't valid! "
+                        + f"({dest.show_destination_error()}){Style.RESET_ALL}"
+                    )
+        except PermissionError as pe:
+            logger.error(f"There was a permission error while running the blueprint: {pe}. Do you need to be root?")
+        except Exception as e:
+            logger.error(f"There was an error executing the blueprint: {e}")
 
     def run_commands(self, commands: dict[str, list[str]]) -> None:
         """

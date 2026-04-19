@@ -58,7 +58,6 @@ class Blueprints:
             out[bp.get_name()] = {
                 "active": bp.is_active(),
                 "valid": bp.is_valid(),
-                "kind": bp.get_kind(),
                 "description": bp.get_description(),
                 "destinations": bp.get_destinatons(),
             }

@@ -1,4 +1,3 @@
-import getpass
 import os
 import tempfile
 from typing import Any
@@ -39,14 +38,6 @@ class Blueprint:
         """
         if "blueprint" not in self.bp:
             logger.error(f"{self.name}: Blueprint is not wrapped in `blueprint` structure!")
-            return
-
-        if "kind" not in self.bp["blueprint"]:
-            logger.error(f"{self.name}: Kind is missing from the blueprint!")
-            return
-
-        if self.bp["blueprint"]["kind"] not in ["sftp", "local"]:
-            logger.error(f"{self.name}: Invalid kind of transport specified in blueprint!")
             return
 
         if "deploy" not in self.bp["blueprint"]:
@@ -155,22 +146,6 @@ class Blueprint:
 
         return self.bp["blueprint"]["description"].strip()
 
-    def get_kind(self) -> str:
-        """
-        Get kind of a blueprint. Current supported types:
-         - sftp
-
-        Returns:
-            bool Is blueprint active
-        """
-        if not self.valid:
-            return ""
-
-        if "kind" not in self.bp["blueprint"]:
-            return "sftp"
-
-        return self.bp["blueprint"]["kind"]
-
     def get_temp(self) -> str:
         """
         Get temporary folder if one is set or create a new one
@@ -183,6 +158,15 @@ class Blueprint:
 
         return self.tmp_folder
 
+    def get_connection_type(self) -> str:
+        """
+        Get connection type from hosts
+
+        Returns
+            str Connection type (FTP,SFTP,WebDAV...)
+        """
+        return ""
+
     def is_source_local(self) -> bool:
         """
         Checks if source machine is local
@@ -190,6 +174,9 @@ class Blueprint:
         Returns
             bool
         """
+        if "machine" not in self.bp["blueprint"]["deploy"]["source"]:
+            return False
+
         machine: str = self.bp["blueprint"]["deploy"]["source"]["machine"]
         data: dict[str, Any] = self.conf.get_machine(machine)
 
@@ -218,15 +205,3 @@ class Blueprint:
             return []
 
         return Destinations(self.bp["blueprint"]["deploy"]["destinations"], self.conf)
-
-    def runas_user(self) -> str:
-        """
-        Get executing user
-
-        Returns
-            string username
-        """
-        if not self.valid:
-            return getpass.getuser()
-
-        return self.bp["blueprint"]["deploy"]["runas"]
